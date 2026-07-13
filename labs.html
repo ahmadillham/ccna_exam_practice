@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="id"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="60 latihan lab CCNA 200-301 v1.1 Bahasa Indonesia, dari dasar hingga lanjut, lengkap dengan jawaban.">
+  <title>CCNA Lab Atlas — 60 Lab CCNA v1.1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body id="top">
+<header class="hero">
+  <div class="hero-grid">
+    <div>
+      <p class="eyebrow">200-301 · Exam v1.1 · Lab workbook</p>
+      <h1>Latihan lab</h1>
+      <div class="cta-row"><a class="button primary" href="index.html">Beranda</a><a class="button" href="theory.html">Rangkuman materi</a><a class="button" href="commands.html">Rangkuman IOS</a><a class="button" href="questions.html">Latihan soal</a></div>
+    </div>
+    <aside class="exam-card" aria-label="Bobot domain ujian CCNA">
+      <h2>Blueprint CCNA v1.1</h2><p>Komposisi domain berdasarkan dokumen ujian 200-301.</p>
+      <div class="domain-row"><span>Network Fundamentals</span><b>20%</b><span class="meter"><i style="width:80%"></i></span></div>
+      <div class="domain-row"><span>Network Access</span><b>20%</b><span class="meter"><i style="width:80%"></i></span></div>
+      <div class="domain-row"><span>IP Connectivity</span><b>25%</b><span class="meter"><i style="width:100%"></i></span></div>
+      <div class="domain-row"><span>IP Services</span><b>10%</b><span class="meter"><i style="width:40%"></i></span></div>
+      <div class="domain-row"><span>Security Fundamentals</span><b>15%</b><span class="meter"><i style="width:60%"></i></span></div>
+      <div class="domain-row"><span>Automation</span><b>10%</b><span class="meter"><i style="width:40%"></i></span></div>
+    </aside>
+  </div>
+</header>
+
+<main class="page">
+  <section class="intro-grid" id="panduan">
+    <div class="intro-copy"><p class="eyebrow" style="color:var(--teal-text)">Cara belajar</p><h2>Konfigurasi dulu. Jawaban belakangan.</h2><p>Bangun topologi di Cisco Packet Tracer, CML, atau GNS3. Setiap lab memiliki tujuan, addressing, tugas, solusi CLI, dan indikator verifikasi. Nama interface dapat disesuaikan dengan perangkat yang tersedia.</p></div>
+    <div class="start-card"><h3>Ritme yang disarankan</h3><ol><li>Simpan satu salinan topologi sebelum mulai.</li><li>Kerjakan tanpa membuka jawaban selama 25–45 menit.</li><li>Gunakan perintah <em>show</em> untuk membuktikan hasil, bukan sekadar ping.</li><li>Hapus konfigurasi dan ulangi lab yang gagal pada hari berikutnya.</li></ol></div>
+  </section>
+
+  <nav class="level-nav" aria-label="Pilih tingkat latihan"><a href="#dasar">01 · Dasar</a><a href="#menengah">02 · Menengah</a><a href="#lanjut">03 · Lanjut</a></nav>
+
+  <section class="level-section" id="dasar">
+    <header class="section-heading"><div><span class="section-kicker">Level 01 · Lab 01–20</span><h2>Dasar yang kokoh.</h2></div><p>Fokus pada CLI, pengalamatan, switching, VLAN, trunk, routing dasar, serta layanan yang akan dipakai pada lab berikutnya.</p></header>
+    <div class="lab-list">
+
+<details class="lab-card" id="lab01">
+<summary><span class="lab-number">01</span><span class="lab-title"><h3>Initial Device Setup &amp; Secure CLI</h3><p>Bangun baseline router yang aman dan mudah dikelola.</p><span class="tags"><span class="tag">Fundamentals</span><span class="tag">Security</span><span class="tag">30 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Router R1 baru tiba untuk kantor cabang. Konfigurasikan identitas, pengamanan akses lokal, IPv4 management, banner, dan SSH v2.</p></div>
+<div class="lab-grid"><div class="panel"><h4>Topologi</h4><pre><code>ADMIN-PC ───── G0/0 R1
+192.168.10.10   .1/24</code></pre></div><div class="panel"><h4>Parameter</h4><ul><li>Domain: <code>lab.local</code></li><li>User: <code>admin</code>, secret: <code>Ccna!2026</code></li><li>Enable secret: <code>Class!23</code></li><li>RSA 2048 bit; hanya SSH</li></ul></div></div>
+<h4>Tugas</h4><ol><li>Atur hostname, nonaktifkan DNS lookup, dan enkripsi password plaintext.</li><li>Pasang banner legal dan enable secret.</li><li>Konfigurasikan G0/0 dan SSH memakai user lokal.</li><li>Uji SSH dari ADMIN-PC dan simpan konfigurasi.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>enable
+configure terminal
+hostname R1
+no ip domain-lookup
+service password-encryption
+enable secret Class!23
+banner motd #AKSES HANYA UNTUK PENGGUNA RESMI#
+username admin privilege 15 secret Ccna!2026
+ip domain-name lab.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+interface g0/0
+ ip address 192.168.10.1 255.255.255.0
+ no shutdown
+exit
+line console 0
+ login local
+ logging synchronous
+ exec-timeout 5 0
+line vty 0 15
+ login local
+ transport input ssh
+ exec-timeout 10 0
+end
+copy running-config startup-config</code></pre><p class="check">✓ Verifikasi: <code>show ip interface brief</code>, <code>show ip ssh</code>, lalu dari PC: <code>ssh -l admin 192.168.10.1</code>.</p></div></details></div></details>
+
+<details class="lab-card" id="lab02">
+<summary><span class="lab-number">02</span><span class="lab-title"><h3>IPv4 Subnetting untuk Empat LAN</h3><p>Ubah satu blok alamat menjadi subnet yang efisien.</p><span class="tags"><span class="tag">IPv4</span><span class="tag">Subnetting</span><span class="tag">35 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Anda mendapat blok <code>192.168.40.0/24</code>. Buat VLSM untuk SALES 100 host, ENGINEERING 50 host, HR 25 host, dan transit 2 host.</p></div>
+<div class="lab-grid"><div class="panel"><h4>Aturan</h4><ul><li>Alokasikan kebutuhan terbesar dahulu.</li><li>Gateway memakai host pertama.</li><li>Catat network, range, broadcast, prefix.</li></ul></div><div class="panel"><h4>Topologi mini</h4><pre><code>PC-SALES ─ SW ─ R1 G0/0
+                R1 G0/1 ─ R2</code></pre></div></div>
+<h4>Tugas</h4><ol><li>Hitung empat subnet tanpa overlap.</li><li>Pasang gateway SALES pada R1 G0/0 dan alamat transit pada R1/R2.</li><li>Pasang alamat PC-SALES dan uji gateway.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><ul><li>SALES: <code>192.168.40.0/25</code>, host .1–.126, broadcast .127</li><li>ENGINEERING: <code>192.168.40.128/26</code>, host .129–.190, broadcast .191</li><li>HR: <code>192.168.40.192/27</code>, host .193–.222, broadcast .223</li><li>Transit: <code>192.168.40.224/30</code>, host .225–.226, broadcast .227</li></ul><pre><code>R1(config)# interface g0/0
+R1(config-if)# ip address 192.168.40.1 255.255.255.128
+R1(config-if)# no shutdown
+R1(config)# interface g0/1
+R1(config-if)# ip address 192.168.40.225 255.255.255.252
+R1(config-if)# no shutdown
+R2(config)# interface g0/1
+R2(config-if)# ip address 192.168.40.226 255.255.255.252
+R2(config-if)# no shutdown</code></pre><p class="check">✓ PC-SALES: <code>192.168.40.10/25</code>, gateway <code>192.168.40.1</code>. Ping gateway.</p></div></details></div></details>
+
+<details class="lab-card" id="lab03">
+<summary><span class="lab-number">03</span><span class="lab-title"><h3>IPv6 Addressing, EUI-64 &amp; Link-Local</h3><p>Kenali jenis alamat dan bangun konektivitas IPv6.</p><span class="tags"><span class="tag">IPv6</span><span class="tag">Fundamentals</span><span class="tag">30 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Aktifkan IPv6 pada dua LAN R1. LAN-A menggunakan EUI-64; LAN-B menggunakan interface ID manual. Tetapkan link-local yang mudah diingat.</p></div><pre><code>PC-A ─ G0/0 [R1] G0/1 ─ PC-B
+2001:db8:10:1::/64   2001:db8:10:2::/64</code></pre>
+<h4>Tugas</h4><ol><li>Aktifkan forwarding IPv6.</li><li>G0/0: prefix LAN-A via EUI-64 dan link-local <code>fe80::1</code>.</li><li>G0/1: <code>2001:db8:10:2::1/64</code> dan link-local <code>fe80::1</code>.</li><li>Jelaskan global unicast, link-local, multicast, dan unique local.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>R1(config)# ipv6 unicast-routing
+R1(config)# interface g0/0
+R1(config-if)# ipv6 address 2001:db8:10:1::/64 eui-64
+R1(config-if)# ipv6 address fe80::1 link-local
+R1(config-if)# no shutdown
+R1(config)# interface g0/1
+R1(config-if)# ipv6 address 2001:db8:10:2::1/64
+R1(config-if)# ipv6 address fe80::1 link-local
+R1(config-if)# no shutdown</code></pre><ul><li>Global unicast: umumnya <code>2000::/3</code>.</li><li>Link-local: <code>fe80::/10</code>, hanya satu link.</li><li>Multicast: <code>ff00::/8</code>; IPv6 tidak memakai broadcast.</li><li>Unique local: <code>fc00::/7</code>, penggunaan internal.</li></ul><p class="check">✓ <code>show ipv6 interface brief</code>. Hasil EUI-64 bergantung pada MAC interface.</p></div></details></div></details>
+
+<details class="lab-card" id="lab04">
+<summary><span class="lab-number">04</span><span class="lab-title"><h3>MAC Learning &amp; Frame Forwarding</h3><p>Amati bagaimana switch belajar, flood, dan meneruskan frame.</p><span class="tags"><span class="tag">Switching</span><span class="tag">MAC Table</span><span class="tag">25 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Tiga PC berada pada satu switch yang masih kosong MAC table-nya. Gunakan Simulation Mode untuk mengamati ARP dan ICMP.</p></div><pre><code>PC-A F0/1 ─┐
+PC-B F0/2 ─┼─ SW1
+PC-C F0/3 ─┘   VLAN 1</code></pre>
+<h4>Tugas</h4><ol><li>Beri PC-A/B/C alamat <code>192.168.1.11–13/24</code> dan ping PC-B agar ARP cache terisi.</li><li>Kosongkan hanya dynamic MAC table switch, jangan hapus ARP PC-A, lalu ping PC-B untuk melihat unknown-unicast flooding pertama.</li><li>Hapus ARP PC-A dan ulangi ping untuk membandingkan broadcast ARP dengan known unicast.</li><li>Temukan MAC PC-A beserta port masuknya.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>PC-A&gt; ping 192.168.1.12
+SW1# clear mac address-table dynamic
+PC-A&gt; ping 192.168.1.12
+SW1# show mac address-table
+PC-A&gt; arp -d
+PC-A&gt; ping 192.168.1.12
+SW1# show mac address-table dynamic</code></pre><p>Switch belajar <strong>source MAC</strong> pada port masuk. ARP Request di-flood karena broadcast. Setelah tujuan dipelajari, ICMP berikutnya hanya diteruskan ke port PC-B. Entry dinamis mengalami aging.</p><p class="check">✓ Tabel akhir menunjukkan MAC PC-A di F0/1 dan PC-B di F0/2.</p></div></details></div></details>
+
+<details class="lab-card" id="lab05">
+<summary><span class="lab-number">05</span><span class="lab-title"><h3>VLAN &amp; Access Port</h3><p>Pisahkan broadcast domain pada sebuah switch.</p><span class="tags"><span class="tag">VLAN</span><span class="tag">Network Access</span><span class="tag">30 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>SW1 melayani SALES dan IT. Buat VLAN 10 dan 20, tempatkan dua port per VLAN, serta tambahkan voice VLAN pada port telepon.</p></div>
+<div class="lab-grid"><div class="panel"><h4>Port map</h4><ul><li>F0/1–2: VLAN 10 SALES</li><li>F0/3–4: VLAN 20 IT</li><li>F0/5: data VLAN 10 + voice VLAN 30</li></ul></div><div class="panel"><h4>Ekspektasi</h4><p>Host satu VLAN saling terhubung. Host beda VLAN belum bisa berkomunikasi tanpa perangkat Layer 3.</p></div></div>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>SW1(config)# vlan 10
+SW1(config-vlan)# name SALES
+SW1(config)# vlan 20
+SW1(config-vlan)# name IT
+SW1(config)# vlan 30
+SW1(config-vlan)# name VOICE
+SW1(config)# interface range f0/1-2
+SW1(config-if-range)# switchport mode access
+SW1(config-if-range)# switchport access vlan 10
+SW1(config)# interface range f0/3-4
+SW1(config-if-range)# switchport mode access
+SW1(config-if-range)# switchport access vlan 20
+SW1(config)# interface f0/5
+SW1(config-if)# switchport mode access
+SW1(config-if)# switchport access vlan 10
+SW1(config-if)# switchport voice vlan 30</code></pre><p class="check">✓ <code>show vlan brief</code>. VLAN 1 adalah VLAN default dan sebaiknya tidak dipakai untuk trafik user/management produksi.</p></div></details></div></details>
+
+<details class="lab-card" id="lab06">
+<summary><span class="lab-number">06</span><span class="lab-title"><h3>802.1Q Trunk &amp; Native VLAN</h3><p>Bawa banyak VLAN melewati link antarswitch.</p><span class="tags"><span class="tag">Trunk</span><span class="tag">802.1Q</span><span class="tag">30 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Hubungkan SW1 dan SW2 melalui G0/1. Izinkan VLAN 10, 20, 999; gunakan VLAN 999 sebagai native VLAN tanpa mismatch.</p></div><pre><code>PC-A ─ SW1 G0/1 ═══ G0/1 SW2 ─ PC-B
+       VLAN 10      trunk       VLAN 10</code></pre>
+<h4>Tugas</h4><ol><li>Buat VLAN sama di kedua switch.</li><li>Jadikan G0/1 static trunk, native 999, dan batasi allowed VLAN.</li><li>Uji dua host VLAN 10 lintas switch.</li><li>Identifikasi akibat native VLAN mismatch.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>! Terapkan pada SW1 dan SW2
+vlan 10
+ name SALES
+vlan 20
+ name IT
+vlan 999
+ name NATIVE
+interface g0/1
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,999
+ no shutdown</code></pre><p class="check">✓ <code>show interfaces trunk</code> harus menunjukkan native 999 dan allowed list sama. Mismatch membuat trafik untagged masuk VLAN berbeda dan memicu peringatan CDP.</p></div></details></div></details>
+
+<details class="lab-card" id="lab07">
+<summary><span class="lab-number">07</span><span class="lab-title"><h3>Inter-VLAN Routing: Router-on-a-Stick</h3><p>Jadikan router gateway bagi beberapa VLAN.</p><span class="tags"><span class="tag">Inter-VLAN</span><span class="tag">Subinterface</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Host SALES VLAN 10 dan IT VLAN 20 perlu berkomunikasi melalui R1. Link SW1–R1 memakai trunk 802.1Q.</p></div><pre><code>PC-SALES ─ SW1 G0/1 ═══ G0/0 R1
+VLAN10 .10   trunk       .1 gateway
+PC-IT VLAN20 .10</code></pre>
+<div class="lab-grid"><div class="panel"><h4>Addressing</h4><ul><li>VLAN 10: <code>10.10.10.0/24</code></li><li>VLAN 20: <code>10.10.20.0/24</code></li><li>Gateway tiap VLAN: .1</li></ul></div><div class="panel"><h4>Target</h4><p>Buat subinterface, encapsulation tag, trunk, access ports, lalu uji lintas VLAN.</p></div></div>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>R1(config)# interface g0/0
+R1(config-if)# no shutdown
+R1(config)# interface g0/0.10
+R1(config-subif)# encapsulation dot1q 10
+R1(config-subif)# ip address 10.10.10.1 255.255.255.0
+R1(config)# interface g0/0.20
+R1(config-subif)# encapsulation dot1q 20
+R1(config-subif)# ip address 10.10.20.1 255.255.255.0
+SW1(config)# interface g0/1
+SW1(config-if)# switchport mode trunk
+SW1(config-if)# switchport trunk allowed vlan 10,20
+SW1(config)# vlan 10
+SW1(config)# vlan 20
+SW1(config)# interface f0/1
+SW1(config-if)# switchport mode access
+SW1(config-if)# switchport access vlan 10
+SW1(config)# interface f0/2
+SW1(config-if)# switchport mode access
+SW1(config-if)# switchport access vlan 20</code></pre><p>PC-SALES: <code>10.10.10.10/24</code>, GW .1. PC-IT: <code>10.10.20.10/24</code>, GW .1.</p><p class="check">✓ <code>show vlan brief</code>, <code>show ip interface brief</code>, <code>show interfaces trunk</code>, dan ping lintas VLAN.</p></div></details></div></details>
+
+<details class="lab-card" id="lab08">
+<summary><span class="lab-number">08</span><span class="lab-title"><h3>Neighbor Discovery: CDP &amp; LLDP</h3><p>Petakan perangkat tetangga tanpa membuka diagram.</p><span class="tags"><span class="tag">CDP</span><span class="tag">LLDP</span><span class="tag">20 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Anda menerima akses console ke SW1, tetapi dokumentasi koneksi hilang. Gunakan CDP dan LLDP untuk menemukan R1 dan SW2.</p></div>
+<h4>Tugas</h4><ol><li>Tampilkan ringkasan dan detail tetangga CDP.</li><li>Aktifkan LLDP global dan transmit/receive pada interface terkait.</li><li>Temukan device ID, local port, remote port, platform, management IP.</li><li>Matikan CDP hanya pada port menuju ISP.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>SW1# show cdp neighbors
+SW1# show cdp neighbors detail
+SW1(config)# lldp run
+SW1(config)# interface range g0/1-2
+SW1(config-if-range)# lldp transmit
+SW1(config-if-range)# lldp receive
+SW1(config)# interface g0/24
+SW1(config-if)# no cdp enable
+SW1# show lldp neighbors detail</code></pre><p>CDP proprietary Cisco; LLDP standar IEEE 802.1AB. Keduanya bekerja di Layer 2 sehingga tetangga dapat ditemukan sebelum IP benar.</p><p class="check">✓ Cocokkan Local Intrfce dan Port ID dengan kabel pada topologi.</p></div></details></div></details>
+
+<details class="lab-card" id="lab09">
+<summary><span class="lab-number">09</span><span class="lab-title"><h3>IPv4 Static &amp; Default Route</h3><p>Bangun jalur antarcabang dan gateway of last resort.</p><span class="tags"><span class="tag">Routing</span><span class="tag">Static Route</span><span class="tag">35 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>R1 adalah cabang, R2 pusat. Cabang memakai default route; pusat memakai route spesifik kembali ke LAN cabang.</p></div><pre><code>LAN-A            Transit             LAN-B
+10.1.1.0/24 ─ R1 ─ 10.0.12.0/30 ─ R2 ─ 10.2.2.0/24
+              .1   .1          .2   .1</code></pre>
+<h4>Tugas</h4><ol><li>Konfigurasikan interface sesuai diagram.</li><li>Di R1 buat default route via R2.</li><li>Di R2 buat network route menuju LAN-A via R1.</li><li>Identifikasi route code, next hop, dan gateway of last resort.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>R1(config)# interface g0/0
+R1(config-if)# ip address 10.1.1.1 255.255.255.0
+R1(config-if)# no shutdown
+R1(config)# interface g0/1
+R1(config-if)# ip address 10.0.12.1 255.255.255.252
+R1(config-if)# no shutdown
+R2(config)# interface g0/0
+R2(config-if)# ip address 10.2.2.1 255.255.255.0
+R2(config-if)# no shutdown
+R2(config)# interface g0/1
+R2(config-if)# ip address 10.0.12.2 255.255.255.252
+R2(config-if)# no shutdown
+R1(config)# ip route 0.0.0.0 0.0.0.0 10.0.12.2
+R2(config)# ip route 10.1.1.0 255.255.255.0 10.0.12.1
+R1# show ip route
+R1# show ip route 10.2.2.0
+R2# show ip route 10.1.1.0</code></pre><p><code>S*</code> menunjukkan static candidate default. AD static default adalah 1; connected berkode <code>C</code>, local host route <code>L</code>.</p><p class="check">✓ Ping antarkedua LAN harus berhasil setelah default gateway host benar.</p></div></details></div></details>
+
+<details class="lab-card" id="lab10">
+<summary><span class="lab-number">10</span><span class="lab-title"><h3>DHCP Server, Client &amp; Relay</h3><p>Distribusikan parameter IP melewati router.</p><span class="tags"><span class="tag">DHCP</span><span class="tag">IP Services</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>R1 menjadi DHCP server untuk LAN lokal dan LAN cabang di belakang R2. R2 meneruskan broadcast DHCP sebagai unicast relay.</p></div><pre><code>LAN10 ─ R1 G0/0 ─── G0/1 R2 G0/0 ─ LAN20
+10.10.10.0/24   10.0.12.0/30   10.20.20.0/24</code></pre>
+<h4>Tugas</h4><ol><li>Di R1, kecualikan .1–.20 pada tiap LAN dan buat dua pool.</li><li>Kirim default gateway dan DNS <code>8.8.8.8</code>.</li><li>Konfigurasikan helper address pada interface LAN R2.</li><li>Ubah PC menjadi DHCP client dan verifikasi lease.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>R1(config)# ip dhcp excluded-address 10.10.10.1 10.10.10.20
+R1(config)# ip dhcp excluded-address 10.20.20.1 10.20.20.20
+R1(config)# ip dhcp pool LAN10
+R1(dhcp-config)# network 10.10.10.0 255.255.255.0
+R1(dhcp-config)# default-router 10.10.10.1
+R1(dhcp-config)# dns-server 8.8.8.8
+R1(config)# ip dhcp pool LAN20
+R1(dhcp-config)# network 10.20.20.0 255.255.255.0
+R1(dhcp-config)# default-router 10.20.20.1
+R1(dhcp-config)# dns-server 8.8.8.8
+R2(config)# interface g0/0
+R2(config-if)# ip helper-address 10.0.12.1</code></pre><p class="check">✓ Pastikan routing dua arah ada. Gunakan <code>show ip dhcp binding</code>, <code>show ip dhcp pool</code>, dan <code>show run interface g0/0</code>.</p></div></details></div></details>
+
+
+<details class="lab-card" id="lab11">
+<summary><span class="lab-number">11</span><span class="lab-title"><h3>Cabling &amp; Interface Troubleshooting</h3><p>Pilih media yang tepat dan baca gejala physical layer.</p><span class="tags"><span class="tag">Cabling</span><span class="tag">Interfaces</span><span class="tag">30 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Uplink kantor sering lambat dan menghasilkan CRC error. Audit link PC–switch, switch–router, serta backbone antargedung 800 meter.</p></div>
+<h4>Tugas</h4><ol><li>Pilih copper, multimode fiber, atau single-mode fiber untuk tiap link.</li><li>Periksa status, speed, duplex, input error, CRC, collision, dan late collision.</li><li>Sisipkan duplex mismatch lalu pulihkan ke konfigurasi yang konsisten.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>show interfaces status
+show interfaces g0/1
+show interfaces counters errors
+! Failure injection pada salah satu sisi saja (lab):
+interface g0/1
+ speed 100
+ duplex full
+! Pemulihan pada kedua sisi:
+interface g0/1
+ speed auto
+ duplex auto</code></pre><p>Copper cocok untuk access link hingga sekitar 100 m; MMF untuk jarak menengah dalam gedung/data center; SMF untuk jarak jauh seperti antargedung. CRC/input error sering mengarah ke kabel/transceiver atau duplex mismatch. Late collision khas half-duplex/mismatch.</p><p class="check">✓ Kedua sisi harus sepakat speed/duplex dan counter error tidak terus bertambah.</p></div></details></div></details>
+
+<details class="lab-card" id="lab12">
+<summary><span class="lab-number">12</span><span class="lab-title"><h3>Verifikasi IP pada Windows, Linux &amp; macOS</h3><p>Diagnosis client sebelum menyalahkan jaringan.</p><span class="tags"><span class="tag">Client OS</span><span class="tag">Troubleshooting</span><span class="tag">25 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Satu client tidak dapat membuka server berdasarkan nama. Buktikan apakah masalah berasal dari alamat, gateway, DNS, ARP, atau jalur.</p></div>
+<h4>Tugas</h4><ol><li>Catat IP, mask/prefix, gateway, dan DNS pada tiga OS.</li><li>Uji loopback, local IP, gateway, remote IP, lalu nama DNS secara berurutan.</li><li>Periksa ARP/neighbor dan routing table client.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code># Windows
+ipconfig /all
+route print
+arp -a
+nslookup server.lab.local
+
+# Linux
+ip address
+ip route
+ip neigh
+resolvectl status
+
+# macOS
+ifconfig
+route -n get default
+arp -a
+scutil --dns</code></pre><p class="check">✓ Jika ping remote IP berhasil tetapi nama gagal, fokus ke DNS. Alamat <code>169.254.0.0/16</code> pada Windows sering menandakan DHCP gagal.</p></div></details></div></details>
+
+<details class="lab-card" id="lab13">
+<summary><span class="lab-number">13</span><span class="lab-title"><h3>TCP, UDP &amp; Well-Known Ports</h3><p>Amati handshake dan pilih transport yang tepat.</p><span class="tags"><span class="tag">TCP/UDP</span><span class="tag">Ports</span><span class="tag">30 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Gunakan Simulation Mode untuk membandingkan akses HTTP dengan query DNS. Catat source/destination port dan pola pesan.</p></div>
+<h4>Tugas</h4><ol><li>Amati TCP three-way handshake SYN, SYN-ACK, ACK.</li><li>Bandingkan dengan transaksi DNS UDP.</li><li>Petakan SSH 22, DNS 53, DHCP 67/68, HTTP 80, HTTPS 443, SNMP 161, NTP 123.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><p>TCP connection-oriented, memakai sequence/acknowledgment, retransmission, dan flow control. UDP connectionless dengan overhead rendah. Client umumnya memakai ephemeral source port; layanan memakai well-known destination port.</p><pre><code>PC&gt; nslookup server.lab.local
+PC&gt; telnet 192.0.2.10 80
+R1# show tcp brief all
+R1# show control-plane host open-ports</code></pre><p class="check">✓ HTTP memperlihatkan handshake sebelum data; query DNS normal dapat berjalan tanpa handshake. DNS juga dapat memakai TCP 53, misalnya untuk response besar/zone transfer.</p></div></details></div></details>
+
+<details class="lab-card" id="lab14">
+<summary><span class="lab-number">14</span><span class="lab-title"><h3>Private IPv4 &amp; Subnet Boundary</h3><p>Bedakan ruang alamat internal dan publik.</p><span class="tags"><span class="tag">IPv4</span><span class="tag">RFC1918</span><span class="tag">25 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Klasifikasikan alamat inventory dan tentukan apakah dua host berada pada subnet yang sama tanpa router.</p></div>
+<h4>Tugas</h4><ol><li>Klasifikasikan <code>10.4.2.1</code>, <code>172.20.1.1</code>, <code>192.168.9.1</code>, <code>100.64.1.1</code>, dan <code>203.0.113.5</code>.</li><li>Tentukan network/broadcast untuk <code>172.16.8.70/27</code>.</li><li>Uji dua host beda subnet pada satu switch, lalu tambahkan gateway.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><p>Private RFC1918: <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, <code>192.168.0.0/16</code>. <code>100.64.0.0/10</code> adalah shared address space CGNAT, bukan RFC1918. <code>203.0.113.0/24</code> khusus dokumentasi.</p><p><code>172.16.8.70/27</code> berada di network <code>172.16.8.64</code>, host .65–.94, broadcast .95.</p><p class="check">✓ Host membandingkan destination dengan mask lokal; tujuan beda subnet dikirim ke MAC default gateway.</p></div></details></div></details>
+
+<details class="lab-card" id="lab15">
+<summary><span class="lab-number">15</span><span class="lab-title"><h3>Switch Management SVI</h3><p>Kelola switch Layer 2 dari subnet lain.</p><span class="tags"><span class="tag">SVI</span><span class="tag">Management</span><span class="tag">30 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>SW1 harus dikelola melalui VLAN 99 dengan IP <code>10.99.99.11/24</code>. Gateway management adalah <code>10.99.99.1</code>.</p></div>
+<h4>Tugas</h4><ol><li>Buat VLAN 99 dan SVI management.</li><li>Pastikan minimal satu port VLAN 99/trunk aktif agar line protocol SVI up.</li><li>Pasang default gateway Layer 2 dan uji SSH dari subnet berbeda.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>vlan 99
+ name MANAGEMENT
+interface vlan 99
+ ip address 10.99.99.11 255.255.255.0
+ no shutdown
+ip default-gateway 10.99.99.1
+interface g0/1
+ switchport mode trunk
+ switchport trunk allowed vlan add 99</code></pre><p class="check">✓ <code>show ip interface brief</code>, <code>show interfaces vlan 99</code>, dan ping gateway. Pada switch Layer 2 gunakan <code>ip default-gateway</code>; multilayer switch dengan <code>ip routing</code> memakai route.</p></div></details></div></details>
+
+<details class="lab-card" id="lab16">
+<summary><span class="lab-number">16</span><span class="lab-title"><h3>Inter-VLAN Routing dengan Multilayer Switch</h3><p>Gunakan SVI sebagai gateway berkecepatan kabel.</p><span class="tags"><span class="tag">L3 Switch</span><span class="tag">SVI</span><span class="tag">35 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>MLS1 menjadi gateway VLAN 10 <code>10.10.10.1/24</code> dan VLAN 20 <code>10.10.20.1/24</code>.</p></div>
+<h4>Tugas</h4><ol><li>Buat VLAN, access ports, dan dua SVI.</li><li>Aktifkan IPv4 routing pada switch.</li><li>Uji lintas VLAN dan bedakan SVI dari routed port.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>ip routing
+vlan 10
+vlan 20
+interface vlan 10
+ ip address 10.10.10.1 255.255.255.0
+ no shutdown
+interface vlan 20
+ ip address 10.10.20.1 255.255.255.0
+ no shutdown
+interface g1/0/1
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+interface g1/0/2
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+interface g1/0/24
+ no switchport
+ ip address 10.255.0.1 255.255.255.252
+ no shutdown</code></pre><p class="check">✓ <code>show vlan brief</code> dan <code>show ip route connected</code> menampilkan kedua VLAN; ping antarkedua PC harus berhasil. SVI adalah interface virtual sebuah VLAN, sedangkan routed port dibuat dengan <code>no switchport</code>.</p></div></details></div></details>
+
+<details class="lab-card" id="lab17">
+<summary><span class="lab-number">17</span><span class="lab-title"><h3>IPv6 SLAAC &amp; Neighbor Discovery</h3><p>Biarkan host membentuk alamat dari Router Advertisement.</p><span class="tags"><span class="tag">IPv6</span><span class="tag">SLAAC</span><span class="tag">35 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>R1 mengiklankan prefix <code>2001:db8:17:1::/64</code>. PC memperoleh global address dan default route tanpa DHCPv6.</p></div>
+<h4>Tugas</h4><ol><li>Aktifkan IPv6 routing dan alamat G0/0.</li><li>Set PC ke Auto Config dan amati RS/RA di Simulation Mode.</li><li>Periksa neighbor cache serta multicast all-nodes/all-routers.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>ipv6 unicast-routing
+interface g0/0
+ ipv6 address 2001:db8:17:1::1/64
+ ipv6 address fe80::1 link-local
+ no shutdown
+show ipv6 interface g0/0
+show ipv6 neighbors
+show ipv6 route</code></pre><p>RS menuju <code>ff02::2</code> meminta RA; RA biasanya menuju <code>ff02::1</code>. NDP menggantikan fungsi ARP IPv4 dengan ICMPv6.</p><p class="check">✓ PC mendapat prefix /64, link-local, dan default route via link-local router.</p></div></details></div></details>
+
+<details class="lab-card" id="lab18">
+<summary><span class="lab-number">18</span><span class="lab-title"><h3>Topology, Component &amp; Security Design Drill</h3><p>Pilih arsitektur, perangkat, dan kontrol keamanan berdasarkan kebutuhan.</p><span class="tags"><span class="tag">Architecture</span><span class="tag">Security Concepts</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Rancang jaringan untuk SOHO 8 user, kampus 500 user, dan data center modern. Buat diagram serta bill of materials sederhana.</p></div>
+<h4>Tugas</h4><ol><li>Pilih SOHO, two-tier, three-tier, atau spine-leaf.</li><li>Tempatkan router, L2/L3 switch, NGFW/IPS, AP, controller, server, endpoint, dan PoE.</li><li>Tandai WAN, on-premises, cloud boundary, serta kontrol physical access.</li><li>Untuk skenario phishing yang mencuri password VPN, identifikasi threat, vulnerability, exploit, impact, dan mitigation.</li><li>Susun program singkat awareness/training dan bandingkan MFA, certificate, serta biometric.</li><li>Pilih IPsec remote-access untuk user atau site-to-site untuk antarkantor dan jelaskan alasannya.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><ul><li>SOHO: integrated router/firewall/AP cukup untuk skala kecil.</li><li>Kampus menengah: two-tier collapsed core; skala besar: access–distribution–core three-tier.</li><li>Data center east-west intensif: spine-leaf memberi jumlah hop yang konsisten.</li><li>PoE switch memberi daya AP/IP phone; NGFW melakukan application-aware policy, IPS mendeteksi/mencegah exploit.</li><li>Potensi kompromi kredensial oleh penyerang adalah <strong>threat</strong>; ketergantungan pada satu password dan awareness pengguna yang lemah adalah <strong>vulnerability</strong>; pesan phishing serta halaman login palsu yang memanfaatkan kelemahan tersebut adalah <strong>exploit</strong> atau teknik serangan; pencurian kredensial dan akses VPN tidak sah adalah <strong>impact</strong>; MFA, awareness, filtering, serta least privilege adalah <strong>mitigation</strong>.</li><li>Program keamanan mencakup awareness berkala, simulasi phishing, pelaporan insiden, badge/visitor control, locked rack, dan audit akses fisik.</li><li>MFA menggabungkan faktor; certificate memberi identity berbasis PKI; biometric adalah faktor inherence. Remote-access VPN melayani user-ke-site, sedangkan site-to-site menghubungkan dua jaringan.</li></ul><p class="check">✓ Diagram harus menunjukkan fungsi, redundancy, failure domain, security controls, dan hubungan on-premises/cloud—bukan sekadar ikon perangkat.</p></div></details></div></details>
+
+<details class="lab-card" id="lab19">
+<summary><span class="lab-number">19</span><span class="lab-title"><h3>Wireless RF &amp; Channel Planning</h3><p>Kurangi co-channel dan adjacent-channel interference.</p><span class="tags"><span class="tag">Wireless</span><span class="tag">RF</span><span class="tag">30 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Tiga AP berdekatan melayani satu SSID. Client mengeluh throughput turun walau sinyal kuat.</p></div>
+<h4>Tugas</h4><ol><li>Atur channel 2.4 GHz menjadi 1, 6, dan 11.</li><li>Gunakan SSID/security sama untuk roaming, tetapi BSSID berbeda.</li><li>Bandingkan 2.4 GHz dan 5 GHz serta dampak channel width dan power.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><ol><li>Buat SSID dan security profile yang sama pada ketiga AP/WLC.</li><li>Tetapkan AP-1 channel 1, AP-2 channel 6, dan AP-3 channel 11 pada radio 2.4 GHz; gunakan Auto-RF hanya setelah baseline manual dicatat.</li><li>Tempatkan client di area overlap, autentikasikan, lalu pindahkan di antara AP sambil memantau association.</li><li>Catat channel, RSSI/signal level, alamat client, dan AP/BSSID sebelum dan sesudah roaming.</li></ol><p>Channel 1/6/11 tidak overlap pada domain regulasi umum 2.4 GHz. 5 GHz menyediakan lebih banyak channel dan biasanya lebih sedikit interference, tetapi propagasi/range lebih pendek. Channel terlalu lebar meningkatkan kapasitas teoritis sekaligus risiko overlap.</p><p class="check">✓ Ketiga AP memancarkan SSID/security sama dengan BSSID berbeda, channel 1/6/11 tidak overlap, client tetap terautentikasi saat berpindah, dan pilihan transmit power terdokumentasi.</p></div></details></div></details>
+
+<details class="lab-card" id="lab20">
+<summary><span class="lab-number">20</span><span class="lab-title"><h3>NTP Server/Client &amp; TFTP Backup</h3><p>Sinkronkan waktu dan simpan konfigurasi di luar perangkat.</p><span class="tags"><span class="tag">NTP</span><span class="tag">TFTP/FTP</span><span class="tag">35 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>R1 <code>10.99.99.1/24</code> menjadi NTP master untuk SW1 <code>10.99.99.11/24</code>. Server backup TFTP berada di <code>10.99.99.60/24</code>.</p></div>
+<h4>Tugas</h4><ol><li>Atur clock/timezone R1, NTP master stratum 5, dan SW1 sebagai client.</li><li>Pastikan timestamp log tersinkron.</li><li>Backup running-config R1 ke TFTP dan pulihkan ke startup-config.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><h5>R1 — NTP master</h5><pre><code>clock set 13:00:00 13 July 2026
+configure terminal
+interface g0/0
+ ip address 10.99.99.1 255.255.255.0
+ no shutdown
+exit
+clock timezone WIB 7 0
+ntp master 5
+service timestamps log datetime msec
+end</code></pre><h5>SW1 — VLAN management dan NTP client</h5><pre><code>configure terminal
+vlan 99
+ name MANAGEMENT
+interface g0/1
+ switchport mode access
+ switchport access vlan 99
+ no shutdown
+interface f0/24
+ switchport mode access
+ switchport access vlan 99
+ spanning-tree portfast
+ no shutdown
+interface vlan 99
+ ip address 10.99.99.11 255.255.255.0
+ no shutdown
+exit
+ip default-gateway 10.99.99.1
+ntp server 10.99.99.1
+end</code></pre><h5>R1 — backup ke TFTP</h5><pre><code>copy running-config tftp://10.99.99.60/R1-running.cfg</code></pre><h5>R1 — restore ke startup-config</h5><pre><code>copy tftp://10.99.99.60/R1-running.cfg startup-config</code></pre><p class="check">✓ <code>show ntp associations</code>, <code>show clock detail</code>, dan cek file pada server. Pastikan G0/1 terhubung ke R1, F0/24 ke server TFTP, dan keduanya berstatus up agar SVI VLAN 99 aktif. TFTP sederhana tanpa autentikasi/enkripsi; FTP memakai autentikasi dan TCP tetapi juga tidak terenkripsi.</p></div></details></div></details>
+    </div>
+  </section>
+  <section class="level-section" id="menengah">
+    <header class="section-heading"><div><span class="section-kicker">Level 02 · Lab 21–40</span><h2>Mulai merangkai sistem.</h2></div><p>Konfigurasikan redundansi Layer 2, routing dinamis, translasi alamat, policy akses, serta kontrol keamanan pada jaringan multi-perangkat.</p></header>
+    <div class="lab-list">
+
+<details class="lab-card" id="lab21">
+<summary><span class="lab-number">21</span><span class="lab-title"><h3>Rapid PVST+: Root, PortFast &amp; BPDU Guard</h3><p>Kendalikan jalur Layer 2 dan lindungi edge port.</p><span class="tags"><span class="tag">STP</span><span class="tag">Rapid PVST+</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Tiga switch membentuk segitiga. Jadikan SW1 root primary VLAN 10, SW2 root secondary, lalu amankan port host di SW3.</p></div><pre><code>       SW1
+      /   \
+    SW2───SW3──PC
+       VLAN 10</code></pre>
+<h4>Tugas</h4><ol><li>Aktifkan Rapid PVST+ pada semua switch.</li><li>Atur root primary/secondary VLAN 10.</li><li>Prediksi root port, designated port, dan alternate port.</li><li>Aktifkan PortFast dan BPDU Guard pada port PC; uji dengan menghubungkan switch.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><h5>Semua switch — VLAN, RSTP, dan trunk</h5><pre><code>configure terminal
+vlan 10
+ name USERS
+spanning-tree mode rapid-pvst
+interface range g0/1-2
+ switchport mode trunk
+ switchport trunk allowed vlan 10
+ no shutdown
+end</code></pre><h5>SW1 — root primary</h5><pre><code>configure terminal
+spanning-tree vlan 10 root primary
+end</code></pre><h5>SW2 — root secondary</h5><pre><code>configure terminal
+spanning-tree vlan 10 root secondary
+end</code></pre><h5>SW3 — port host</h5><pre><code>configure terminal
+interface f0/10
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ no shutdown
+end</code></pre><h5>Verifikasi</h5><pre><code>show spanning-tree vlan 10
+show interfaces status err-disabled</code></pre><p class="check">✓ Root bridge tidak memiliki root port. Port edge yang menerima BPDU menjadi err-disabled; pulihkan setelah kabel salah dilepas dengan <code>shutdown</code> lalu <code>no shutdown</code>.</p><p class="note">Root Guard mencegah superior BPDU pada port tertentu; Loop Guard mencegah port non-designated menjadi forwarding ketika BPDU hilang. BPDU Filter harus digunakan sangat hati-hati karena dapat menyebabkan loop.</p></div></details></div></details>
+
+<details class="lab-card" id="lab22">
+<summary><span class="lab-number">22</span><span class="lab-title"><h3>Layer 2 EtherChannel dengan LACP</h3><p>Gabungkan dua link trunk menjadi satu logical link.</p><span class="tags"><span class="tag">LACP</span><span class="tag">EtherChannel</span><span class="tag">35 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Dua link G0/1–2 antara SW1 dan SW2 harus menjadi Port-channel 1. Gunakan LACP dan bawa VLAN 10,20,999.</p></div><pre><code>SW1 G0/1–2 ═════ G0/1–2 SW2
+          Po1 trunk</code></pre>
+<h4>Tugas</h4><ol><li>Pastikan speed, duplex, mode, native, dan allowed VLAN konsisten.</li><li>SW1 memakai LACP active; SW2 passive.</li><li>Verifikasi bundling dan uji kegagalan satu member link.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><h5>SW1 — LACP active</h5><pre><code>configure terminal
+vlan 10
+vlan 20
+vlan 999
+interface port-channel 1
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,999
+interface range g0/1-2
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,999
+ channel-group 1 mode active
+ no shutdown
+end</code></pre><h5>SW2 — LACP passive</h5><pre><code>configure terminal
+vlan 10
+vlan 20
+vlan 999
+interface port-channel 1
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,999
+interface range g0/1-2
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,999
+ channel-group 1 mode passive
+ no shutdown
+end</code></pre><h5>Verifikasi pada kedua switch</h5><pre><code>show etherchannel summary
+show interfaces trunk
+show interfaces port-channel 1</code></pre><p class="check">✓ <code>show etherchannel summary</code> harus menampilkan <code>Po1(SU)</code> dan member bertanda <code>(P)</code>. <code>show interfaces trunk</code> menampilkan Po1, bukan link fisik terpisah.</p></div></details></div></details>
+
+<details class="lab-card" id="lab23">
+<summary><span class="lab-number">23</span><span class="lab-title"><h3>Layer 3 EtherChannel</h3><p>Buat routed port-channel antardistribution switch.</p><span class="tags"><span class="tag">L3 Switch</span><span class="tag">LACP</span><span class="tag">35 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>DLS1 dan DLS2 terhubung dua link fisik. Jadikan routed EtherChannel <code>10.255.12.0/30</code> tanpa switchport.</p></div>
+<h4>Tugas</h4><ol><li>Aktifkan IP routing pada kedua multilayer switch.</li><li>Ubah G1/0/1–2 menjadi routed ports dan buat LACP Po12.</li><li>Pasang .1/30 pada DLS1 dan .2/30 pada DLS2.</li><li>Verifikasi ping dan load distribution.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><h5>DLS1 — 10.255.12.1/30</h5><pre><code>configure terminal
+ip routing
+interface port-channel 12
+ no switchport
+ ip address 10.255.12.1 255.255.255.252
+ no shutdown
+interface range g1/0/1-2
+ no switchport
+ channel-group 12 mode active
+ no shutdown
+end</code></pre><h5>DLS2 — 10.255.12.2/30</h5><pre><code>configure terminal
+ip routing
+interface port-channel 12
+ no switchport
+ ip address 10.255.12.2 255.255.255.252
+ no shutdown
+interface range g1/0/1-2
+ no switchport
+ channel-group 12 mode active
+ no shutdown
+end</code></pre><h5>Verifikasi pada kedua DLS</h5><pre><code>show etherchannel summary
+show etherchannel load-balance
+show interfaces counters etherchannel
+ping &lt;PEER_IP&gt;</code></pre><p class="check">✓ Gunakan <code>10.255.12.2</code> sebagai <code>&lt;PEER_IP&gt;</code> dari DLS1 dan <code>10.255.12.1</code> dari DLS2. Po12 harus tampil sebagai routed <code>(R)</code>. Bangkitkan beberapa flow dengan pasangan source/destination berbeda, lalu pastikan counter kedua member meningkat; satu flow tetap memakai satu member agar urutan paket terjaga.</p></div></details></div></details>
+
+<details class="lab-card" id="lab24">
+<summary><span class="lab-number">24</span><span class="lab-title"><h3>IPv4/IPv6 Static, Host &amp; Floating Route</h3><p>Gunakan primary path dan backup route ber-AD tinggi.</p><span class="tags"><span class="tag">Dual-stack</span><span class="tag">Floating Static</span><span class="tag">45 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>R1 mencapai R3 melalui R2 sebagai jalur utama dan link langsung sebagai backup. LAN sumber R1 adalah <code>172.16.10.0/24</code> dan <code>2001:db8:10::/64</code>. Bangun route pergi dan kembali yang simetris, lalu uji kegagalan R2 secara penuh agar kedua ujung kehilangan next hop utama dan floating static AD 200 dapat aktif.</p></div><pre><code>R1 ─── R2 ─── R3   primary
+ \────────────/     backup
+Sumber R1: 172.16.10.0/24, 2001:db8:10::/64
+Tujuan R3: 172.16.30.0/24, 2001:db8:30::/64</code></pre>
+<div class="lab-grid"><div class="panel"><h4>Primary links</h4><ul><li>R1–R2: 10.0.12.0/30, 2001:db8:12::/64</li><li>R2–R3: 10.0.23.0/30, 2001:db8:23::/64</li></ul></div><div class="panel"><h4>Backup &amp; LAN</h4><ul><li>R1–R3: 10.0.13.0/30, 2001:db8:13::/64</li><li>R3 LAN: 172.16.30.0/24, 2001:db8:30::/64</li></ul></div></div>
+<h4>Tugas</h4><ol><li>Buat route utama via R2 dengan next hop.</li><li>Buat backup route via R3 langsung ber-AD 200.</li><li>Buat IPv6 host route ke <code>2001:db8:30::10/128</code>.</li><li>Lengkapi route pergi dan kembali pada R2/R3.</li><li>Matikan R2 atau kedua interface transitnya agar next hop utama R1 dan R3 sama-sama hilang, lalu buktikan trafik dua arah memakai link langsung R1–R3.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>R1(config)# ip route 172.16.30.0 255.255.255.0 10.0.12.2
+R1(config)# ip route 172.16.30.0 255.255.255.0 10.0.13.2 200
+R1(config)# ipv6 route 2001:db8:30::10/128 2001:db8:12::2
+R1(config)# ipv6 route 2001:db8:30::10/128 2001:db8:13::2 200
+R2(config)# ip route 172.16.30.0 255.255.255.0 10.0.23.2
+R2(config)# ipv6 route 2001:db8:30::10/128 2001:db8:23::2
+R2(config)# ip route 172.16.10.0 255.255.255.0 10.0.12.1
+R2(config)# ipv6 route 2001:db8:10::/64 2001:db8:12::1
+R3(config)# ip route 172.16.10.0 255.255.255.0 10.0.23.1
+R3(config)# ip route 172.16.10.0 255.255.255.0 10.0.13.1 200
+R3(config)# ipv6 route 2001:db8:10::/64 2001:db8:23::1
+R3(config)# ipv6 route 2001:db8:10::/64 2001:db8:13::1 200
+R1# show ip route 172.16.30.0
+R1# show ipv6 route 2001:db8:30::10/128
+R3# show ip route 172.16.10.0
+R3# show ipv6 route 2001:db8:10::/64</code></pre><p class="check">✓ Saat R2 aktif, route AD 1 dipakai pada kedua arah. Setelah R2 atau kedua interface transitnya dimatikan, route AD 200 masuk RIB pada R1 dan R3. Ping dari LAN R1 ke host R3 serta balasannya harus melewati link langsung R1–R3. Mematikan hanya link R1–R2 tidak cukup untuk memindahkan route balik R3 tanpa IP SLA/tracking karena next hop R2 pada sisi R3 masih dapat dijangkau.</p></div></details></div></details>
+
+<details class="lab-card" id="lab25">
+<summary><span class="lab-number">25</span><span class="lab-title"><h3>Single-Area OSPFv2 Point-to-Point</h3><p>Bangun adjacency dan kendalikan router ID.</p><span class="tags"><span class="tag">OSPFv2</span><span class="tag">Area 0</span><span class="tag">45 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>R1—R2—R3 terhubung Ethernet point-to-point. Semua LAN dipublikasikan di area 0; interface LAN harus passive.</p></div><pre><code>Lo/LAN R1 ─ R1 ─ R2 ─ R3 ─ Lo/LAN R3
+RID: 1.1.1.1  2.2.2.2  3.3.3.3</code></pre>
+<h4>Tugas</h4><ol><li>Gunakan process ID 10 dan router ID eksplisit.</li><li>Aktifkan OSPF per-interface di area 0.</li><li>Set link antarrouter sebagai point-to-point dan LAN passive.</li><li>Verifikasi neighbor, LSDB, dan route OSPF.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>! Contoh R2
+router ospf 10
+ router-id 2.2.2.2
+ passive-interface default
+ no passive-interface g0/0
+ no passive-interface g0/1
+interface g0/0
+ ip ospf 10 area 0
+ ip ospf network point-to-point
+interface g0/1
+ ip ospf 10 area 0
+ ip ospf network point-to-point
+interface loopback 0
+ ip ospf 10 area 0</code></pre><p>Terapkan pola sama pada R1/R3 dengan RID dan interface masing-masing. Jika RID diubah setelah proses aktif, gunakan <code>clear ip ospf process</code> pada lab.</p><p class="check">✓ <code>show ip ospf neighbor</code> harus FULL/- pada network point-to-point; gunakan <code>show ip route ospf</code> dan <code>show ip ospf interface brief</code>.</p></div></details></div></details>
+
+<details class="lab-card" id="lab26">
+<summary><span class="lab-number">26</span><span class="lab-title"><h3>OSPF Broadcast: DR/BDR Election</h3><p>Manipulasi election pada segmen multiaccess.</p><span class="tags"><span class="tag">OSPF</span><span class="tag">DR/BDR</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>R1, R2, dan R3 berada pada Ethernet bersama <code>10.0.123.0/24</code>. Jadikan R1 DR, R2 BDR, R3 DROTHER dengan priority.</p></div>
+<h4>Tugas</h4><ol><li>Bangun adjacency area 0 pada broadcast segment.</li><li>Set priority R1=200, R2=100, R3=0.</li><li>Reset proses secara terkontrol agar election baru terjadi.</li><li>Jelaskan tie-breaker jika priority sama.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>! Interface segmen bersama
+R1(config-if)# ip ospf 10 area 0
+R1(config-if)# ip ospf priority 200
+R2(config-if)# ip ospf 10 area 0
+R2(config-if)# ip ospf priority 100
+R3(config-if)# ip ospf 10 area 0
+R3(config-if)# ip ospf priority 0
+! Shutdown G0/0 pada ketiga router dahulu, lalu bring-up terkontrol:
+R1(config-if)# no shutdown
+! Tunggu R1 menjadi DR, kemudian aktifkan R2 dan terakhir R3.
+R2(config-if)# no shutdown
+R3(config-if)# no shutdown</code></pre><p>Election OSPF non-preemptive: priority tertinggi menang; jika seri, router ID tertinggi. Priority 0 tidak eligible. Urutan bring-up mencegah hasil yang bergantung timing dari tiga reset terpisah.</p><p class="check">✓ R1 menunjukkan DR, R2 BDR, dan R3 DROTHER pada <code>show ip ospf interface g0/0</code>.</p></div></details></div></details>
+
+<details class="lab-card" id="lab27">
+<summary><span class="lab-number">27</span><span class="lab-title"><h3>Static NAT, Dynamic Pool &amp; PAT</h3><p>Terjemahkan alamat inside local ke inside global.</p><span class="tags"><span class="tag">NAT</span><span class="tag">PAT</span><span class="tag">45 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>LAN <code>10.10.10.0/24</code> keluar melalui R1. Server .10 mendapat static NAT ke <code>203.0.113.10</code>; host .0/24 memakai pool .100–.110 atau PAT interface.</p></div>
+<h4>Tugas</h4><ol><li>Tandai interface inside/outside.</li><li>Buat static NAT server.</li><li>Buat ACL sumber, pool PUBLIC, dan dynamic NAT.</li><li>Setelah pengujian, ganti dynamic pool menjadi PAT overload.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>interface g0/0
+ ip nat inside
+interface g0/1
+ ip nat outside
+ip nat inside source static 10.10.10.10 203.0.113.10
+access-list 1 deny host 10.10.10.10
+access-list 1 permit 10.10.10.0 0.0.0.255
+ip nat pool PUBLIC 203.0.113.100 203.0.113.110 netmask 255.255.255.0
+ip nat inside source list 1 pool PUBLIC
+! Hentikan trafik, lalu bersihkan translasi dinamis sebelum mengganti policy
+clear ip nat translation *
+no ip nat inside source list 1 pool PUBLIC
+ip nat inside source list 1 interface g0/1 overload</code></pre><p class="check">✓ Bangkitkan trafik, lalu <code>show ip nat translations</code> dan <code>show ip nat statistics</code>. Sediakan default route menuju ISP dan return route pada ISP lab.</p></div></details></div></details>
+
+<details class="lab-card" id="lab28">
+<summary><span class="lab-number">28</span><span class="lab-title"><h3>Standard &amp; Extended IPv4 ACL</h3><p>Terapkan least privilege tanpa memutus trafik sah.</p><span class="tags"><span class="tag">ACL</span><span class="tag">Security</span><span class="tag">45 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>GUEST <code>10.30.30.0/24</code> hanya boleh DNS dan HTTPS ke server <code>172.16.50.10</code>; selain itu ditolak. Hanya ADMIN <code>10.99.99.0/24</code> boleh SSH ke VTY R1.</p></div>
+<h4>Tugas</h4><ol><li>Buat named extended ACL dekat sumber GUEST.</li><li>Izinkan UDP/TCP DNS serta TCP 443 ke server.</li><li>Tambahkan explicit deny dengan logging dan permit trafik lainnya bila policy memerlukannya.</li><li>Batasi VTY memakai standard ACL.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>ip access-list extended GUEST-POLICY
+ permit udp 10.30.30.0 0.0.0.255 host 172.16.50.10 eq 53
+ permit tcp 10.30.30.0 0.0.0.255 host 172.16.50.10 eq 53
+ permit tcp 10.30.30.0 0.0.0.255 host 172.16.50.10 eq 443
+ deny ip 10.30.30.0 0.0.0.255 any log
+ permit ip any any
+interface g0/0.30
+ ip access-group GUEST-POLICY in
+ip access-list standard VTY-ADMIN
+ permit 10.99.99.0 0.0.0.255
+ deny any log
+line vty 0 15
+ access-class VTY-ADMIN in
+ transport input ssh</code></pre><p class="check">✓ <code>show access-lists</code> harus memperlihatkan hit counter. Ingat implicit <code>deny any</code> di akhir setiap ACL dan uji dari sumber yang berbeda.</p></div></details></div></details>
+
+<details class="lab-card" id="lab29">
+<summary><span class="lab-number">29</span><span class="lab-title"><h3>Switch Port Security</h3><p>Batasi perangkat yang boleh menggunakan access port.</p><span class="tags"><span class="tag">Port Security</span><span class="tag">Layer 2</span><span class="tag">30 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>F0/10 melayani satu workstation dan satu IP phone. Izinkan maksimal dua MAC sticky dengan violation restrict.</p></div>
+<h4>Tugas</h4><ol><li>Jadikan port static access VLAN 10 dengan voice VLAN 30.</li><li>Aktifkan sticky learning, maximum 2, dan restrict.</li><li>Hubungkan perangkat ketiga dan amati violation counter.</li><li>Bandingkan protect, restrict, shutdown, serta dynamic aging vs sticky persistence.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>interface f0/10
+ switchport mode access
+ switchport access vlan 10
+ switchport voice vlan 30
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict</code></pre><p><strong>Protect</strong> membuang frame MAC ilegal tanpa counter/log; <strong>restrict</strong> membuang dan menaikkan counter/log; <strong>shutdown</strong> membuat port err-disabled. Sticky MAC disimpan sebagai konfigurasi dan bukan target aging; untuk menguji aging, gunakan dynamic secure MAC tanpa sticky pada salinan lab.</p><p class="check">✓ <code>show port-security interface f0/10</code> dan <code>show port-security address</code>. Simpan running config agar sticky MAC bertahan setelah reload.</p></div></details></div></details>
+
+<details class="lab-card" id="lab30">
+<summary><span class="lab-number">30</span><span class="lab-title"><h3>DHCP Snooping &amp; Dynamic ARP Inspection</h3><p>Blokir rogue DHCP dan ARP spoofing.</p><span class="tags"><span class="tag">DHCP Snooping</span><span class="tag">DAI</span><span class="tag">45 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>DHCP server resmi berada melalui uplink G0/1. Semua access port VLAN 10 untrusted, dibatasi 15 DHCP message/detik, dan dilindungi DAI.</p></div>
+<h4>Tugas</h4><ol><li>Aktifkan DHCP snooping global dan untuk VLAN 10.</li><li>Trust hanya uplink ke server; rate-limit access ports.</li><li>Aktifkan DAI VLAN 10 dan trust uplink.</li><li>Verifikasi binding database dan drop.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>ip dhcp snooping
+ip dhcp snooping vlan 10
+ip arp inspection vlan 10
+interface g0/1
+ ip dhcp snooping trust
+ ip arp inspection trust
+interface range f0/1-24
+ ip dhcp snooping limit rate 15</code></pre><p>DAI memvalidasi ARP menggunakan DHCP snooping binding table. Host ber-IP statis memerlukan ARP ACL atau binding yang sesuai agar tidak terblokir.</p><p class="check">✓ <code>show ip dhcp snooping</code>, <code>show ip dhcp snooping binding</code>, <code>show ip arp inspection vlan 10</code>, dan <code>show ip arp inspection statistics</code>.</p></div></details></div></details>
+
+
+<details class="lab-card" id="lab31">
+<summary><span class="lab-number">31</span><span class="lab-title"><h3>OSPF Default Route Origination</h3><p>Iklankan jalur internet ke seluruh area 0.</p><span class="tags"><span class="tag">OSPF</span><span class="tag">Default Route</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>R1 terhubung ISP dan menjadi exit router area 0. R2/R3 harus menerima default route melalui OSPF hanya ketika route tersebut tersedia di R1.</p></div>
+<h4>Tugas</h4><ol><li>Buat default static R1 menuju ISP.</li><li>Iklankan default melalui OSPF tanpa <code>always</code>.</li><li>Hapus default static dan amati route pada R2/R3.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>R1(config)# ip route 0.0.0.0 0.0.0.0 203.0.113.1
+R1(config)# router ospf 10
+R1(config-router)# default-information originate
+R2# show ip route ospf
+R2# show ip route 0.0.0.0</code></pre><p class="check">✓ R2 melihat <code>O*E2 0.0.0.0/0</code>. Tanpa keyword <code>always</code>, advertisement berhenti jika R1 tidak mempunyai default route di RIB.</p></div></details></div></details>
+
+<details class="lab-card" id="lab32">
+<summary><span class="lab-number">32</span><span class="lab-title"><h3>OSPF Cost &amp; Path Selection</h3><p>Pengaruhi metric tanpa memutus redundancy.</p><span class="tags"><span class="tag">OSPF Metric</span><span class="tag">Routing</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>R1 memiliki dua jalur ke LAN R4. Jadikan jalur R1–R2–R4 utama dan R1–R3–R4 cadangan dengan cost eksplisit.</p></div>
+<h4>Tugas</h4><ol><li>Catat cost awal dan route next hop.</li><li>Atur cost interface primary 10 dan backup 100.</li><li>Matikan primary link dan ukur konvergensi.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>! Link primary pada kedua arah
+interface g0/0
+ ip ospf cost 10
+! Link backup pada kedua arah
+interface g0/1
+ ip ospf cost 100
+show ip ospf interface brief
+show ip route 10.4.4.0
+traceroute 10.4.4.1</code></pre><p>OSPF memilih total cost terendah. Default cost berasal dari reference bandwidth / interface bandwidth; nilai <code>bandwidth</code> memengaruhi metric, bukan kecepatan fisik.</p><p class="check">✓ Traceroute memakai R2 saat normal dan berpindah ke R3 ketika primary gagal.</p></div></details></div></details>
+
+<details class="lab-card" id="lab33">
+<summary><span class="lab-number">33</span><span class="lab-title"><h3>IPv6 Static Route Variants</h3><p>Konfigurasikan next-hop, exit-interface, dan fully specified route.</p><span class="tags"><span class="tag">IPv6 Routing</span><span class="tag">Static</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>R1–R2 terhubung G0/1. LAN R2 adalah <code>2001:db8:33:2::/64</code>; default utama R1 menuju R3 <code>2001:db8:33:13::2</code> dan backup menuju R2 <code>2001:db8:33:12::2</code>.</p></div>
+<h4>Tugas</h4><ol><li>Buat fully specified route memakai interface dan link-local next hop.</li><li>Buat host route /128 ke server.</li><li>Buat floating default route AD 200.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>ipv6 route 2001:db8:33:2::/64 g0/1 fe80::2
+ipv6 route 2001:db8:33:2::10/128 g0/1 fe80::2
+ipv6 route ::/0 2001:db8:33:13::2
+ipv6 route ::/0 2001:db8:33:12::2 200
+show ipv6 route static
+show ipv6 route 2001:db8:33:2::10/128</code></pre><p class="check">✓ Jika next hop berupa link-local, exit interface wajib disebut karena alamat link-local dapat berulang pada link berbeda.</p></div></details></div></details>
+
+<details class="lab-card" id="lab34">
+<summary><span class="lab-number">34</span><span class="lab-title"><h3>ACL Placement &amp; Troubleshooting</h3><p>Temukan policy yang benar tetapi ditempatkan salah.</p><span class="tags"><span class="tag">ACL</span><span class="tag">Troubleshooting</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>ACL WEB-ONLY untuk guest <code>10.30.30.0/24</code> menuju server <code>172.16.50.10</code> memiliki sequence 10 permit HTTPS, 20 deny guest, 30 permit lainnya; ACL diterapkan salah pada G0/1 outbound sehingga VLAN lain ikut terdampak.</p></div>
+<h4>Tugas</h4><ol><li>Gunakan hit counter dan interface config untuk menemukan penerapan ACL.</li><li>Pindahkan extended ACL dekat sumber VLAN 30 arah inbound.</li><li>Gunakan sequence number untuk menambah DNS sebelum deny.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>show ip interface
+show access-lists WEB-ONLY
+interface g0/1
+ no ip access-group WEB-ONLY out
+interface g0/0.30
+ ip access-group WEB-ONLY in
+ip access-list extended WEB-ONLY
+ 15 permit udp 10.30.30.0 0.0.0.255 any eq 53
+ 16 permit tcp 10.30.30.0 0.0.0.255 any eq 53
+show access-lists WEB-ONLY</code></pre><p class="check">✓ Uji matriks sumber, tujuan, protocol, port. Standard ACL umumnya dekat tujuan; extended ACL umumnya dekat sumber.</p></div></details></div></details>
+
+<details class="lab-card" id="lab35">
+<summary><span class="lab-number">35</span><span class="lab-title"><h3>DHCP Failure Isolation</h3><p>Telusuri proses DORA melewati relay.</p><span class="tags"><span class="tag">DHCP</span><span class="tag">DORA</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Client VLAN 35 mendapat APIPA. Server DHCP berada dua hop jauhnya. Salah satu dari VLAN, helper, route balik, atau pool mask bermasalah.</p></div>
+<h4>Tugas</h4><ol><li>Amati Discover, Offer, Request, Ack.</li><li>Verifikasi SVI, helper address, routing server, excluded address, dan pool.</li><li>Perbaiki tanpa membuat DHCP server lokal baru.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><h5>Client Windows</h5><pre><code>ipconfig /all
+ipconfig /release
+ipconfig /renew</code></pre><h5>Relay/SVI</h5><pre><code>show ip interface brief
+show running-config interface vlan 35
+show ip route 10.99.99.50
+configure terminal
+interface vlan 35
+ ip helper-address 10.99.99.50
+end</code></pre><h5>IOS DHCP server — state</h5><pre><code>show ip dhcp pool
+show ip dhcp binding</code></pre><h5>IOS DHCP server — mulai debug terkontrol</h5><pre><code>debug ip dhcp server events</code></pre><h5>IOS DHCP server — hentikan debug</h5><pre><code>undebug all</code></pre><p>Jika server memakai Packet Tracer Server, periksa <strong>Services → DHCP</strong>, subnet mask/pool, default gateway, serta route balik menuju <code>10.35.35.0/24</code>.</p><p class="check">✓ Helper berada pada interface yang menerima broadcast client; server mengenali subnet giaddr <code>10.35.35.0/24</code> dan memiliki return route. Aktifkan debug hanya selama pengujian terkontrol.</p></div></details></div></details>
+
+<details class="lab-card" id="lab36">
+<summary><span class="lab-number">36</span><span class="lab-title"><h3>NAT Pool Exhaustion &amp; PAT Recovery</h3><p>Diagnosis translasi yang habis saat jumlah client meningkat.</p><span class="tags"><span class="tag">NAT</span><span class="tag">PAT</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Pool hanya memiliki dua public IP tanpa overload. Client ketiga gagal keluar meski route dan ACL benar.</p></div>
+<h4>Tugas</h4><ol><li>Buktikan pool kehabisan alamat dari NAT statistics.</li><li>Bersihkan translasi dinamis secara terkontrol.</li><li>Ubah policy menjadi pool overload atau interface overload.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><h5>Diagnosis</h5><pre><code>show ip nat statistics
+show ip nat translations</code></pre><h5>Bersihkan translasi hanya pada lab terkontrol</h5><pre><code>clear ip nat translation *</code></pre><h5>Opsi A — PAT memakai pool</h5><pre><code>configure terminal
+no ip nat inside source list 1 pool SMALL
+ip nat inside source list 1 pool SMALL overload
+end</code></pre><h5>Opsi B — PAT memakai alamat interface</h5><pre><code>configure terminal
+no ip nat inside source list 1 pool SMALL
+ip nat inside source list 1 interface g0/1 overload
+end</code></pre><p class="check">✓ Pilih hanya salah satu opsi. Setelah trafik dibangkitkan dari tiga client, semuanya memperoleh translation unik berdasarkan port. Jangan membersihkan translation aktif sembarangan di produksi.</p></div></details></div></details>
+
+<details class="lab-card" id="lab37">
+<summary><span class="lab-number">37</span><span class="lab-title"><h3>AAA: Local, TACACS+ &amp; RADIUS</h3><p>Pisahkan authentication, authorization, dan accounting.</p><span class="tags"><span class="tag">AAA</span><span class="tag">Security</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>R1 harus memakai database lokal sebagai fallback jika server AAA <code>10.99.99.70</code> tidak tersedia.</p></div>
+<h4>Tugas</h4><ol><li>Aktifkan AAA new-model dan buat login method list TACACS+ lalu local.</li><li>Terapkan pada VTY tanpa mengunci console.</li><li>Bandingkan TACACS+ dan RADIUS.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>username breakglass privilege 15 secret Local!23
+aaa new-model
+tacacs server ISE-LAB
+ address ipv4 10.99.99.70
+ key Tacacs!23
+aaa authentication login VTY-AUTH group tacacs+ local
+aaa authorization exec default group tacacs+ local if-authenticated
+aaa accounting exec default start-stop group tacacs+
+line vty 0 15
+ login authentication VTY-AUTH
+ transport input ssh</code></pre><p>TACACS+ memakai TCP 49 dan mengenkripsi payload; cocok untuk administrasi perangkat serta memisahkan fungsi AAA. RADIUS memakai UDP 1812/1813 dan umum untuk network access. Authentication membuktikan identitas, authorization menentukan hak, accounting mencatat aktivitas. Image Packet Tracer lama dapat memakai sintaks legacy <code>tacacs-server host</code>/<code>key</code>; tetapkan platform sebelum mulai.</p><p class="check">✓ Uji authentication, authorization, accounting, lalu fallback lokal ketika server dimatikan. Pastikan akun break-glass benar sebelum menutup sesi.</p></div></details></div></details>
+
+<details class="lab-card" id="lab38">
+<summary><span class="lab-number">38</span><span class="lab-title"><h3>WLC, AP, Trunk &amp; LAG Mapping</h3><p>Petakan koneksi fisik ke interface logis WLAN.</p><span class="tags"><span class="tag">Wireless Architecture</span><span class="tag">WLC</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>WLC menggunakan management VLAN 99 dan client VLAN 20/30. Dua uplink WLC dibundel sebagai LAG; lightweight AP berada pada access VLAN 99.</p></div>
+<h4>Tugas</h4><ol><li>Untuk AireOS/Packet Tracer, buat static LAG trunk ke WLC dengan VLAN 20,30,99; gunakan LACP hanya bila platform dinyatakan Catalyst 9800.</li><li>Petakan dynamic interface WLC ke VLAN client.</li><li>Jelaskan CAPWAP control/data, local mode, dan FlexConnect.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>interface range g1/0/1-2
+ channel-group 10 mode on
+interface port-channel 10
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 20,30,99
+interface g1/0/10
+ switchport mode access
+ switchport access vlan 99
+ spanning-tree portfast</code></pre><p>Pada AireOS, aktifkan LAG di Controller &gt; General, simpan, dan reboot; switch memakai static <code>mode on</code>. Karena VLAN 99 native, management interface WLC memakai VLAN ID 0/untagged. Catalyst 9800 memerlukan desain LACP tersendiri. CAPWAP menghubungkan AP ke WLC; FlexConnect dapat melakukan local switching.</p><p class="check">✓ Po10 tampil <code>SU</code> tanpa protocol LACP pada AireOS, trunk konsisten, AP join WLC, dan client mendapat subnet sesuai SSID.</p></div></details></div></details>
+
+<details class="lab-card" id="lab39">
+<summary><span class="lab-number">39</span><span class="lab-title"><h3>Syslog &amp; SNMP Event Correlation</h3><p>Hubungkan log, timestamp, interface counter, dan polling.</p><span class="tags"><span class="tag">Syslog</span><span class="tag">SNMP</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>G0/1 flapping setiap beberapa menit. Kirim log ke NMS, aktifkan link traps, lalu korelasikan waktu kejadian dengan counter.</p></div>
+<h4>Tugas</h4><ol><li>Set timestamp, buffered logging, remote host, dan severity notifications.</li><li>Aktifkan SNMP linkdown/linkup traps.</li><li>Trigger shutdown/no shutdown dan catat pesan.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>service timestamps log datetime msec localtime
+ntp server 10.99.99.50 prefer
+logging buffered 16384 notifications
+logging host 10.99.99.50
+logging trap notifications
+snmp-server enable traps snmp linkdown linkup
+ip access-list standard NMS-ONLY
+ permit host 10.99.99.50
+snmp-server community CCNA-RO ro NMS-ONLY
+snmp-server host 10.99.99.50 version 2c CCNA-RO
+show logging
+show interfaces g0/1 counters errors</code></pre><p class="check">✓ Severity 5 notification mencakup level 0–5, bukan 6–7. Syslog menceritakan event; SNMP dapat polling counter dan mengirim notification/trap.</p></div></details></div></details>
+
+<details class="lab-card" id="lab40">
+<summary><span class="lab-number">40</span><span class="lab-title"><h3>VRF-Lite Traffic Isolation</h3><p>Buat dua routing table pada satu router.</p><span class="tags"><span class="tag">VRF</span><span class="tag">Virtualization</span><span class="tag">45 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Tenant BLUE dan RED sama-sama memakai <code>10.1.1.0/24</code>. Isolasikan interface mereka menggunakan VRF terpisah.</p></div>
+<h4>Tugas</h4><ol><li>Buat VRF BLUE/RED dan kaitkan interface sebelum memberi IP.</li><li>Gunakan alamat overlap pada VRF berbeda.</li><li>Ping dengan konteks VRF dan bandingkan routing table global.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>vrf definition BLUE
+ address-family ipv4
+ exit-address-family
+exit
+vrf definition RED
+ address-family ipv4
+ exit-address-family
+exit
+interface g0/0
+ vrf forwarding BLUE
+ ip address 10.1.1.1 255.255.255.0
+ no shutdown
+interface g0/1
+ vrf forwarding RED
+ ip address 10.1.1.1 255.255.255.0
+ no shutdown
+show vrf
+show ip route vrf BLUE
+show ip route vrf RED
+ping vrf BLUE 10.1.1.10</code></pre><p>VRF memvirtualisasi routing table. Server virtualization membagi host menjadi VM; container berbagi kernel dan lebih ringan. Ketiganya memberi isolasi pada lapisan berbeda.</p><p class="check">✓ Prefix overlap diterima karena berada pada routing table terpisah dan tidak saling mencapai tanpa route leaking.</p></div></details></div></details>
+    </div>
+  </section>
+
+  <section class="level-section" id="lanjut">
+    <header class="section-heading"><div><span class="section-kicker">Level 03 · Lab 41–60</span><h2>Berpikir seperti engineer.</h2></div><p>Gabungkan banyak domain, analisis bukti, dokumentasikan keputusan, dan selesaikan gangguan tanpa mengandalkan satu perintah saja.</p></header>
+    <div class="lab-list">
+
+<details class="lab-card" id="lab41">
+<summary><span class="lab-number">41</span><span class="lab-title"><h3>Redundant Campus: VLAN, LACP &amp; STP</h3><p>Satukan desain access–distribution yang tahan link failure.</p><span class="tags"><span class="tag">Campus</span><span class="tag">STP</span><span class="tag">LACP</span><span class="tag">60 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>ASW1 dan ASW2 terhubung redundan ke DSW1/DSW2. VLAN 10 dan 20 harus tersedia end-to-end. DSW1 root VLAN 10, DSW2 root VLAN 20; link antar-DSW adalah LACP trunk.</p></div><pre><code>       DSW1 ══Po1══ DSW2
+        │ \          / │
+        │  ASW1  ASW2  │
+        └───────────────┘</code></pre>
+<h4>Tugas</h4><ol><li>Buat VLAN 10,20,999 pada semua switch dan konsistenkan trunk.</li><li>Bangun Po1 LACP DSW1–DSW2.</li><li>Lakukan STP load-sharing: root primary berbeda per VLAN.</li><li>Aktifkan PortFast/BPDU Guard hanya pada host ports.</li><li>Putus satu uplink dan buktikan konvergensi.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><h5>Semua switch — VLAN dan mode STP</h5><pre><code>configure terminal
+vlan 10
+ name STAFF
+vlan 20
+ name VOICE
+vlan 999
+ name NATIVE
+spanning-tree mode rapid-pvst
+end</code></pre><h5>DSW1 — root VLAN 10 dan sisi pertama Po1</h5><pre><code>configure terminal
+spanning-tree vlan 10 root primary
+spanning-tree vlan 20 root secondary
+interface port-channel 1
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,999
+ no shutdown
+interface range g1/0/1-2
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,999
+ channel-group 1 mode active
+ no shutdown
+end</code></pre><h5>DSW2 — root VLAN 20 dan sisi kedua Po1</h5><pre><code>configure terminal
+spanning-tree vlan 20 root primary
+spanning-tree vlan 10 root secondary
+interface port-channel 1
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,999
+ no shutdown
+interface range g1/0/1-2
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,999
+ channel-group 1 mode active
+ no shutdown
+end</code></pre><h5>Setiap uplink ASW–DSW</h5><p>Jalankan pada kedua sisi setiap link dan sesuaikan nomor interface. Contoh berikut memakai dua uplink ASW.</p><pre><code>configure terminal
+interface range g1/0/23-24
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,999
+ no shutdown
+end</code></pre><h5>ASW1 dan ASW2 — template host port</h5><pre><code>configure terminal
+interface range f0/1-20
+ switchport mode access
+ switchport access vlan 10
+ switchport voice vlan 20
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ no shutdown
+end</code></pre><h5>Verifikasi sebelum dan sesudah link failure</h5><pre><code>show spanning-tree vlan 10
+show spanning-tree vlan 20
+show etherchannel summary
+show interfaces trunk</code></pre><p class="check">✓ DSW1 menjadi root VLAN 10, DSW2 root VLAN 20, Po1 berstatus up, dan satu uplink dapat diputus tanpa memutus konektivitas end-to-end.</p></div></details></div></details>
+
+<details class="lab-card" id="lab42">
+<summary><span class="lab-number">42</span><span class="lab-title"><h3>First-Hop Redundancy dengan HSRP</h3><p>Sediakan default gateway virtual yang tetap tersedia.</p><span class="tags"><span class="tag">FHRP</span><span class="tag">HSRP</span><span class="tag">45 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>DLS1 dan DLS2 menjadi gateway VLAN 10. Virtual IP <code>10.10.10.1</code>; DLS1 harus Active dan mengambil kembali role setelah pulih.</p></div>
+<div class="lab-grid"><div class="panel"><h4>Alamat</h4><ul><li>DLS1 SVI: <code>10.10.10.2/24</code></li><li>DLS2 SVI: <code>10.10.10.3/24</code></li><li>Virtual gateway: <code>10.10.10.1</code></li><li>DLS1 G1/0/24 ↔ CORE G0/0: <code>10.10.254.1/30</code> ↔ <code>10.10.254.2/30</code></li></ul></div><div class="panel"><h4>Failure test</h4><p>Pastikan uplink DLS1–CORE <code>up/up</code> pada baseline. Shutdown G1/0/24 DLS1 dan amati perpindahan Active router, lalu pulihkan untuk menguji preempt.</p></div></div>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><h5>Kedua DLS — prerequisite Layer 2 VLAN 10</h5><p>Jalankan pada DLS1 dan DLS2. Contoh ini memakai G1/0/1 sebagai trunk antarkedua DLS; sesuaikan port bila keduanya terhubung melalui access switch.</p><pre><code>configure terminal
+vlan 10
+ name USERS
+interface g1/0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 10
+ no shutdown
+end</code></pre><h5>DLS1 — Active utama</h5><pre><code>configure terminal
+ip routing
+interface vlan 10
+ ip address 10.10.10.2 255.255.255.0
+ standby 10 ip 10.10.10.1
+ standby 10 priority 110
+ standby 10 preempt
+ standby 10 track 1 decrement 20
+ no shutdown
+exit
+interface g1/0/24
+ no switchport
+ ip address 10.10.254.1 255.255.255.252
+ no shutdown
+exit
+track 1 interface g1/0/24 line-protocol
+end</code></pre><h5>CORE — peer agar object tracking memiliki baseline aktif</h5><pre><code>configure terminal
+interface g0/0
+ ip address 10.10.254.2 255.255.255.252
+ no shutdown
+end</code></pre><h5>DLS2 — Standby</h5><pre><code>configure terminal
+ip routing
+interface vlan 10
+ ip address 10.10.10.3 255.255.255.0
+ standby 10 ip 10.10.10.1
+ standby 10 priority 100
+ standby 10 preempt
+ no shutdown
+end</code></pre><h5>Verifikasi pada kedua DLS</h5><pre><code>show ip interface brief
+show standby brief</code></pre><h5>Verifikasi object tracking hanya pada DLS1</h5><pre><code>show track 1</code></pre><p class="check">✓ Sebelum failure test, <code>show track 1</code> pada DLS1 harus menunjukkan Up dan DLS1 harus Active dengan priority 110. Setelah G1/0/24 DLS1 di-shutdown, priority efektif turun menjadi 90 sehingga DLS2 mengambil peran. Setelah link dipulihkan, track kembali Up dan <code>preempt</code> mengembalikan DLS1 sebagai Active. SVI VLAN 10 pada kedua DLS harus <code>up/up</code> dan PC memakai gateway virtual .1. FHRP menyediakan redundansi first hop; HSRP adalah implementasi Cisco, sedangkan VRRP standar terbuka.</p><p class="note">Blueprint CCNA v1.1 meminta pemahaman tujuan dan konsep FHRP. Konfigurasi ini memberi konteks praktik tambahan.</p></div></details></div></details>
+
+<details class="lab-card" id="lab43">
+<summary><span class="lab-number">43</span><span class="lab-title"><h3>Management Plane: SSH, NTP, Syslog &amp; SNMP</h3><p>Bangun observability dan akses administratif terpusat.</p><span class="tags"><span class="tag">IP Services</span><span class="tag">Management</span><span class="tag">50 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Server NMS <code>10.99.99.50</code> menyediakan NTP dan syslog. R1 harus sinkron waktu, mengirim log severity warning ke atas, memakai timestamp, SSH, dan SNMP read-only.</p></div>
+<h4>Tugas</h4><ol><li>Konfigurasikan SSH lokal dan batasi VTY ke management subnet.</li><li>Jadikan R1 NTP client dengan NMS sebagai server.</li><li>Kirim syslog warning (0–4) dan gunakan timestamp millisecond.</li><li>Konfigurasikan SNMPv2c RO hanya untuk simulasi; jelaskan mengapa SNMPv3 lebih aman.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>hostname R1
+ip domain-name lab.local
+username admin privilege 15 secret Ccna!2026
+crypto key generate rsa modulus 2048
+ip ssh version 2
+service timestamps log datetime msec
+ntp server 10.99.99.50 prefer
+logging host 10.99.99.50
+logging trap warnings
+snmp-server community CCNA-RO ro MGMT
+snmp-server location Lab-Rack-A
+snmp-server contact netops@lab.local
+ip access-list standard MGMT
+ permit 10.99.99.0 0.0.0.255
+line vty 0 15
+ access-class MGMT in
+ login local
+ transport input ssh</code></pre><p class="check">✓ <code>show clock detail</code>, <code>show ntp associations</code>, <code>show logging</code>, <code>show snmp community</code>. Severity syslog 0 paling kritis, 7 debugging. SNMPv3 mendukung autentikasi dan enkripsi; community SNMPv2c berupa plaintext.</p></div></details></div></details>
+
+<details class="lab-card" id="lab44">
+<summary><span class="lab-number">44</span><span class="lab-title"><h3>WLAN di WLC: WPA2-PSK</h3><p>Buat SSID aman dan hubungkan wireless client.</p><span class="tags"><span class="tag">Wireless</span><span class="tag">WLC GUI</span><span class="tag">45 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Di Packet Tracer, AP lightweight terhubung ke WLC. Buat WLAN <code>CCNA-LAB</code> ID 10, map ke interface VLAN 20, WPA2/AES PSK <code>Wireless!23</code>.</p></div>
+<h4>Tugas</h4><ol><li>Pastikan port switch WLC trunk dan VLAN management/client diizinkan; AP access port sesuai desain.</li><li>Di GUI WLC buat WLAN, pilih interface VLAN 20, dan aktifkan.</li><li>Security Layer 2: WPA2, AES, PSK.</li><li>Hubungkan laptop, peroleh DHCP, dan uji gateway.</li><li>Pilih channel non-overlap 2.4 GHz: 1, 6, atau 11.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><h5>Prerequisite infrastructure</h5><pre><code>! Pada multilayer switch/gateway
+ip routing
+vlan 20
+vlan 99
+interface vlan 20
+ ip address 10.44.20.1 255.255.255.0
+ ip helper-address 10.99.99.50
+ no shutdown
+interface vlan 99
+ ip address 10.99.99.1 255.255.255.0
+ no shutdown
+! Pool DHCP client VLAN20: network 10.44.20.0/24, default-router 10.44.20.1
+
+! Switch ke WLC
+interface g0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 20,99
+! Switch ke AP
+interface g0/10
+ switchport mode access
+ switchport access vlan 99
+ spanning-tree portfast
+! Switch ke DHCP server
+interface g0/20
+ switchport mode access
+ switchport access vlan 99
+ spanning-tree portfast
+! WLC management VLAN99: 10.99.99.2/24, gateway 10.99.99.1
+! WLC dynamic interface VLAN20: 10.44.20.2/24, gateway 10.44.20.1
+! AP: 10.99.99.10/24, gateway 10.99.99.1, controller 10.99.99.2
+! NIC DHCP server pada VLAN99: 10.99.99.50/24, gateway 10.99.99.1</code></pre><h5>Urutan GUI</h5><ol><li><strong>WLANs → Create New</strong>: Profile/SSID CCNA-LAB, ID 10.</li><li><strong>General</strong>: Status Enabled; Interface/Interface Group VLAN20. Isi DHCP server <code>10.99.99.50</code> bila platform/WLC menyediakan field tersebut.</li><li><strong>Security → Layer 2</strong>: WPA+WPA2; WPA2 Policy AES; Authentication PSK.</li><li>Masukkan PSK <code>Wireless!23</code>, Apply/Save Configuration.</li><li>Pada client pilih SSID, WPA2-PSK/AES, masukkan key, lalu DHCP.</li><li>Atur AP berdekatan ke channel 1/6/11 atau gunakan Auto-RF dan catat hasil.</li></ol><p class="check">✓ SVI VLAN 20 harus up; pool DHCP client <code>10.44.20.0/24</code> harus mengiklankan <code>default-router 10.44.20.1</code>. NIC server DHCP tetap memakai <code>10.99.99.50/24</code> dengan gateway <code>10.99.99.1</code>. AP harus dapat menjangkau management interface WLC. Setelah itu client mendapat alamat VLAN 20 dan dapat ping gateway. SSID adalah nama logis WLAN; RF membawa sinyal; enkripsi melindungi frame. WPA3 lebih kuat, termasuk SAE untuk personal mode.</p><p class="note">Menu dapat sedikit berbeda menurut simulator/WLC. AP local mode melayani client; FlexConnect cocok untuk cabang; monitor/sniffer mode dipakai observasi.</p></div></details></div></details>
+
+<details class="lab-card" id="lab45">
+<summary><span class="lab-number">45</span><span class="lab-title"><h3>QoS: Classification, Marking &amp; Congestion</h3><p>Terapkan policy sederhana untuk trafik suara.</p><span class="tags"><span class="tag">QoS</span><span class="tag">PHB</span><span class="tag">45 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>WAN 10 Mbps membawa voice RTP dan data. Klasifikasikan RTP, tandai DSCP EF, berikan priority 20%, dan batasi guest traffic 1 Mbps.</p></div>
+<h4>Tugas</h4><ol><li>Buat ACL RTP UDP 16384–32767 dan class-map.</li><li>Buat policy-map: marking EF + LLQ 20%; police guest 1 Mbps.</li><li>Terapkan outbound pada WAN dan jelaskan queuing vs shaping.</li><li>Bandingkan TCP dan UDP untuk voice.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>ip access-list extended RTP
+ permit udp any any range 16384 32767
+ip access-list standard GUEST-SOURCES
+ permit 10.30.30.0 0.0.0.255
+class-map match-any VOICE
+ match access-group name RTP
+class-map match-any GUEST
+ match access-group name GUEST-SOURCES
+policy-map WAN-CHILD
+ class VOICE
+  set dscp ef
+  priority percent 20
+ class GUEST
+  police 1000000
+ class class-default
+  fair-queue
+policy-map WAN-PARENT
+ class class-default
+  shape average 10000000
+  service-policy WAN-CHILD
+interface g0/1
+ service-policy output WAN-PARENT</code></pre><p>Parent shaper membentuk bottleneck nyata 10 Mbps; LLQ voice mendapat 20% dari shaped rate saat congestion. <strong>Classification</strong> mengenali trafik, <strong>marking</strong> memberi label, <strong>queuing</strong> mengatur urutan, <strong>policing</strong> membuang/remark excess, dan <strong>shaping</strong> menahan excess. Konfigurasi MQC ini pengayaan; blueprint menekankan pemahaman PHB.</p><p class="check">✓ <code>show policy-map interface g0/1</code> menampilkan parent shaper 10 Mbps, child policy, serta counter voice/guest yang berubah.</p></div></details></div></details>
+
+<details class="lab-card" id="lab46">
+<summary><span class="lab-number">46</span><span class="lab-title"><h3>Routing Decision: Longest Prefix, AD &amp; Metric</h3><p>Prediksi jalur forwarding dari routing table campuran.</p><span class="tags"><span class="tag">Routing Table</span><span class="tag">LPM</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>R1 memiliki default route, OSPF <code>10.0.0.0/8</code>, static <code>10.10.0.0/16</code>, dan OSPF <code>10.10.10.0/24</code>. Tentukan jalur untuk beberapa tujuan.</p></div>
+<div class="lab-grid"><div class="panel"><h4>Tujuan uji</h4><ul><li><code>10.10.10.42</code></li><li><code>10.10.99.5</code></li><li><code>10.99.1.1</code></li><li><code>192.0.2.8</code></li></ul></div><div class="panel"><h4>Urutan keputusan</h4><ol><li>Longest prefix match</li><li>AD jika prefix sama beda sumber</li><li>Metric jika protocol sama</li></ol></div></div>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><ul><li><code>10.10.10.42</code> → /24 karena paling spesifik.</li><li><code>10.10.99.5</code> → /16 static.</li><li><code>10.99.1.1</code> → /8 OSPF.</li><li><code>192.0.2.8</code> → /0 default.</li></ul><pre><code>show ip route 10.10.10.42
+show ip route 10.10.99.5
+show ip route 10.99.1.1
+show ip route 192.0.2.8
+show ip cef 10.10.10.42</code></pre><p class="check">✓ Prefix length dipilih sebelum AD. AD membandingkan kepercayaan sumber route menuju prefix identik; metric memilih route dalam routing protocol yang sama.</p></div></details></div></details>
+
+<details class="lab-card" id="lab47">
+<summary><span class="lab-number">47</span><span class="lab-title"><h3>REST API &amp; JSON Network Inventory</h3><p>Baca request, response, dan struktur data controller.</p><span class="tags"><span class="tag">REST API</span><span class="tag">JSON</span><span class="tag">40 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Controller lab menyediakan endpoint <code>https://controller.lab/api/v1/devices</code>. Analisis request, temukan perangkat berstatus unreachable, dan susun request perubahan lokasi.</p></div>
+<h4>Tugas</h4><ol><li>Identifikasi method CRUD: GET, POST, PUT/PATCH, DELETE.</li><li>Baca object, array, key, value, string, boolean pada JSON.</li><li>Tulis curl GET dengan Bearer token dan PATCH lokasi device id 42.</li><li>Jelaskan status 200, 201, 400, 401, 404, 500.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>curl --cacert lab-ca.pem -H "Authorization: Bearer TOKEN_LAB" \
+  -H "Accept: application/json" \
+  https://controller.lab/api/v1/devices
+
+curl --cacert lab-ca.pem -X PATCH \
+  -H "Authorization: Bearer TOKEN_LAB" \
+  -H "Content-Type: application/json" \
+  -d '{"location":"Jakarta-Rack-2"}' \
+  https://controller.lab/api/v1/devices/42</code></pre><pre><code>{
+  "devices": [
+    {"id": 42, "hostname": "R1", "reachable": true},
+    {"id": 43, "hostname": "SW1", "reachable": false}
+  ],
+  "count": 2
+}</code></pre><p><code>devices</code> adalah key dengan value array; tiap elemen object. Device id 43/SW1 berstatus unreachable. GET=read, POST=create (umumnya 201), PUT/PATCH=update (umumnya 200/204), DELETE=delete. 400 request salah; 401 belum terautentikasi; 404 tidak ditemukan; 500 server error. Hindari <code>-k</code> di luar troubleshooting lab karena mematikan validasi sertifikat.</p></div></details></div></details>
+
+<details class="lab-card" id="lab48">
+<summary><span class="lab-number">48</span><span class="lab-title"><h3>Automation: Ansible, Terraform &amp; Controller</h3><p>Kenali declarative state dan arsitektur software-defined.</p><span class="tags"><span class="tag">Automation</span><span class="tag">SDN</span><span class="tag">AI/ML</span><span class="tag">45 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Tim NetOps harus menambah NTP server pada 50 router. Rancang perubahan idempotent dan petakan aliran API pada controller-based network.</p></div>
+<h4>Tugas</h4><ol><li>Buat inventory dan playbook Ansible minimal untuk NTP.</li><li>Jelaskan peran Terraform dibanding Ansible.</li><li>Petakan northbound/southbound API, control plane, data plane, overlay, underlay, fabric.</li><li>Usulkan satu use case predictive AI dan satu generative AI beserta guardrail.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code># inventory.yml
+all:
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_network_os: cisco.ios.ios
+    ansible_user: admin
+    ansible_password: "{{ vault_ios_password }}"
+  hosts:
+    R1: {ansible_host: 10.99.99.11}
+    R2: {ansible_host: 10.99.99.12}
+
+# ntp.yml
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: Ensure NTP server exists
+      cisco.ios.ios_config:
+        lines:
+          - ntp server 10.99.99.50
+        save_when: modified
+
+# Verifikasi: run kedua harus changed=0
+# ansible-playbook -i inventory.yml ntp.yml --check --diff
+# ansible-playbook -i inventory.yml ntp.yml --diff</code></pre><p>Simpan password dengan Ansible Vault, bukan plaintext. Ansible mengelola konfigurasi secara idempotent; Terraform mengelola lifecycle infrastruktur dari desired state. Northbound API menghubungkan aplikasi–controller; southbound controller–device. Underlay memberi transport, overlay jaringan logis di atasnya, fabric adalah sistem gabungannya.</p><p>Predictive AI: prediksi kegagalan link dari telemetry. Generative AI: merangkum insiden atau draft konfigurasi. Guardrail: human approval, validation lab, least privilege, audit log, dan rollback.</p><p class="check">✓ Check mode menunjukkan diff yang diharapkan; run pertama changed, run kedua changed=0, dan <code>show run | include ntp server</code> sesuai desired state.</p></div></details></div></details>
+
+<details class="lab-card" id="lab49">
+<summary><span class="lab-number">49</span><span class="lab-title"><h3>Multi-Domain Troubleshooting Challenge</h3><p>Temukan enam fault dari gejala, bukan dari tebakan.</p><span class="tags"><span class="tag">Troubleshooting</span><span class="tag">Integrated</span><span class="tag">60 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Pengguna VLAN 10 tidak mendapat DHCP, VLAN 20 tidak mencapai server, adjacency OSPF turun, dan uplink banyak error. Sisipkan enam fault berikut pada salinan topologi, lalu minta rekan menyelesaikannya.</p></div>
+<div class="lab-grid"><div class="panel"><h4>Fixture topologi</h4><pre><code>PC10/PC20 ─ ASW1 ═Po1═ DSW1 ─ R1 ─ R2 ─ DHCP/SRV
+VLAN10/20       trunk       OSPF area 0</code></pre></div><div class="panel"><h4>State awal benar</h4><ul><li>Po1: G0/1–2, native 999, allowed 10,20,999</li><li>VLAN10 gateway 10.10.10.1; helper 10.99.99.50</li><li>R1–R2: 10.0.12.0/30, OSPF area 0</li><li>Server VLAN20: 10.20.20.10/24</li></ul></div></div>
+<h4>Fault yang harus didiagnosis</h4><ol><li>F0/10 user ditempatkan di VLAN 20, seharusnya VLAN 10.</li><li>Native VLAN SW1 Po1=999, sisi DSW1=1.</li><li>Member G0/2 hanya mengizinkan VLAN 20,999.</li><li>R2 G0/0 berada di OSPF area 1.</li><li>Helper VLAN10 menunjuk 10.99.99.51.</li><li>Sisi ASW1 forced 100/full sementara peer auto.</li></ol>
+<details class="answer"><summary>Lihat runbook jawaban</summary><div class="answer-content"><pre><code>show interfaces status
+show interfaces counters errors
+show vlan brief
+show interfaces trunk
+show etherchannel summary
+show spanning-tree vlan 10
+show ip interface brief
+show ip ospf neighbor
+show ip ospf interface
+show run | include ip helper-address
+show run interface vlan 10
+show ip route</code></pre><ol><li>Mulai dari scope dan baseline; periksa physical/interface state dan error.</li><li>Validasi VLAN access, trunk native/allowed, lalu EtherChannel consistency.</li><li>Validasi IP/interface, OSPF area/timer/network type, kemudian routing table.</li><li>Periksa helper pada interface yang menerima broadcast client.</li><li>Samakan speed/duplex pada kedua sisi, idealnya auto/auto.</li><li>Perbaiki satu fault, verifikasi, catat bukti, lalu lanjut.</li></ol><p class="check">✓ Kriteria selesai: lease DHCP benar, semua adjacency FULL, error counter tidak terus naik, VLAN 20 dapat mencapai server, dan log tidak menunjukkan mismatch.</p></div></details></div></details>
+
+<details class="lab-card" id="lab50">
+<summary><span class="lab-number">50</span><span class="lab-title"><h3>Capstone: Secure Dual-Stack Branch</h3><p>Rancang, implementasikan, amankan, dan buktikan satu jaringan utuh.</p><span class="tags"><span class="tag">Capstone</span><span class="tag">Dual-stack</span><span class="tag">90 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Misi akhir</strong><p>Bangun cabang dua switch dan dua router untuk 40 STAFF, 20 VOICE, 12 GUEST, serta management. Gunakan blok IPv4 <code>10.50.0.0/23</code> dengan VLSM dan IPv6 <code>2001:db8:50::/48</code>.</p></div>
+<div class="lab-grid"><div class="panel"><h4>Wajib</h4><ul><li>VLAN 10 STAFF, 20 VOICE, 30 GUEST, 99 MGMT, 999 NATIVE</li><li>LACP trunk dan Rapid PVST+</li><li>Inter-VLAN routing dan OSPFv2 area 0</li><li>IPv6 static default + specific return route</li><li>DHCP, PAT, SSH, NTP, syslog</li><li>Guest ACL, port security, snooping/DAI</li></ul></div><div class="panel"><h4>Deliverables</h4><ul><li>Diagram dan addressing table</li><li>Konfigurasi tersimpan</li><li>Output verifikasi</li><li>Test matrix pass/fail</li><li>Catatan dua failure test</li></ul></div></div>
+<div class="lab-grid"><div class="panel"><h4>Reference topology</h4><pre><code>STAFF/VOICE/GUEST ─ SW1 ═Po1═ SW2 ─trunk─ R1 ─ R2 ─ ISP
+                                  ROAS    transit
+MGMT + Services 10.50.0.144/28</code></pre></div><div class="panel"><h4>Service &amp; public map</h4><ul><li>DHCP/DNS/NTP/Syslog: <code>10.50.0.150</code> dan <code>2001:db8:50:99::150</code></li><li>R1–R2: 10.50.0.128/30 dan 2001:db8:50:ff::/64</li><li>R2–ISP: <code>203.0.113.0/30</code> dan <code>2001:db8:ffff:50::/64</code>; R2=.2, ISP=.1</li><li>PAT memakai interface outside R2</li></ul></div></div>
+<h4>Kriteria penerimaan</h4><ol><li>STAFF mencapai server internal dan internet simulasi via PAT.</li><li>GUEST hanya mendapat DHCP/DNS/HTTPS dan tidak dapat mengakses management.</li><li>Semua perangkat hanya dapat dikelola via SSH dari VLAN 99.</li><li>Putus satu member LACP: konektivitas tetap berjalan.</li><li>Rogue DHCP pada access port tidak memberikan lease.</li></ol>
+<details class="answer"><summary>Lihat blueprint solusi &amp; rubrik</summary><div class="answer-content"><h5>Contoh VLSM</h5><ul><li>STAFF: <code>10.50.0.0/26</code>, gateway .1</li><li>VOICE: <code>10.50.0.64/27</code>, gateway .65</li><li>GUEST: <code>10.50.0.96/28</code>, gateway .97</li><li>Transit: <code>10.50.0.128/30</code></li><li>MGMT/SERVICES: <code>10.50.0.144/28</code>, gateway .145, server .150</li></ul>
+<h5>IPv6 reference</h5><ul><li>VLAN10: <code>2001:db8:50:10::/64</code>, gateway <code>::1</code></li><li>VLAN20: <code>2001:db8:50:20::/64</code>, gateway <code>::1</code></li><li>VLAN30: <code>2001:db8:50:30::/64</code>, gateway <code>::1</code></li><li>VLAN99: <code>2001:db8:50:99::/64</code>, gateway <code>::1</code></li><li>R1–R2: <code>2001:db8:50:ff::1/64</code> dan <code>::2/64</code></li></ul>
+<h5>Golden-state template — R1 routing</h5><pre><code>configure terminal
+ipv6 unicast-routing
+interface g0/0
+ no shutdown
+interface g0/0.10
+ encapsulation dot1q 10
+ ip address 10.50.0.1 255.255.255.192
+ ipv6 address 2001:db8:50:10::1/64
+ ip helper-address 10.50.0.150
+interface g0/0.20
+ encapsulation dot1q 20
+ ip address 10.50.0.65 255.255.255.224
+ ipv6 address 2001:db8:50:20::1/64
+ ip helper-address 10.50.0.150
+interface g0/0.99
+ encapsulation dot1q 99
+ ip address 10.50.0.145 255.255.255.240
+ ipv6 address 2001:db8:50:99::1/64
+interface g0/1
+ ip address 10.50.0.129 255.255.255.252
+ ipv6 address 2001:db8:50:ff::1/64
+ no shutdown
+router ospf 10
+ passive-interface default
+ no passive-interface g0/1
+ network 10.50.0.0 0.0.1.255 area 0
+ipv6 route ::/0 2001:db8:50:ff::2
+end</code></pre>
+
+<h5>R2 — edge routing dan PAT</h5><pre><code>configure terminal
+ipv6 unicast-routing
+interface g0/0
+ ip address 10.50.0.130 255.255.255.252
+ ipv6 address 2001:db8:50:ff::2/64
+ ip nat inside
+ no shutdown
+interface g0/1
+ ip address 203.0.113.2 255.255.255.252
+ ipv6 address 2001:db8:ffff:50::2/64
+ ip nat outside
+ no shutdown
+ip route 0.0.0.0 0.0.0.0 203.0.113.1
+ipv6 route ::/0 2001:db8:ffff:50::1
+ipv6 route 2001:db8:50::/48 2001:db8:50:ff::1
+router ospf 10
+ passive-interface default
+ no passive-interface g0/0
+ network 10.50.0.128 0.0.0.3 area 0
+ default-information originate
+access-list 1 permit 10.50.0.0 0.0.1.255
+ip nat inside source list 1 interface g0/1 overload
+end</code></pre>
+
+<h5>ISP-LAB — specific return route IPv6</h5><p class="note">Jalankan hanya pada router ISP simulasi, bukan pada R1 atau R2.</p><pre><code>configure terminal
+ipv6 unicast-routing
+ipv6 route 2001:db8:50::/48 2001:db8:ffff:50::2
+end</code></pre>
+
+<h5>R1 — Guest policy IPv4 dan IPv6</h5><pre><code>configure terminal
+ip access-list extended GUEST-IN
+ permit udp any eq bootpc any eq bootps
+ permit udp 10.50.0.96 0.0.0.15 host 10.50.0.150 eq 53
+ permit tcp 10.50.0.96 0.0.0.15 host 10.50.0.150 eq 53
+ deny ip 10.50.0.96 0.0.0.15 10.50.0.0 0.0.1.255 log
+ permit tcp 10.50.0.96 0.0.0.15 any eq 443
+ deny ip any any log
+
+ipv6 access-list GUEST6-IN
+ permit icmp any any router-solicitation
+ permit icmp any any nd-ns
+ permit icmp any any nd-na
+ permit icmp any any packet-too-big
+ permit icmp any any time-exceeded
+ permit icmp any any parameter-problem
+ permit udp 2001:db8:50:30::/64 host 2001:db8:50:99::150 eq 53
+ permit tcp 2001:db8:50:30::/64 host 2001:db8:50:99::150 eq 53
+ deny ipv6 2001:db8:50:30::/64 2001:db8:50::/48 log
+ permit tcp 2001:db8:50:30::/64 any eq 443
+ deny ipv6 any any log
+interface g0/0.30
+ encapsulation dot1q 30
+ ip address 10.50.0.97 255.255.255.240
+ ipv6 address 2001:db8:50:30::1/64
+ ip helper-address 10.50.0.150
+ ip access-group GUEST-IN in
+ ipv6 traffic-filter GUEST6-IN in
+end</code></pre>
+<h5>Urutan implementasi</h5><ol><li>Baseline, cabling, VLAN/access/trunk/LACP/STP.</li><li>SVI/subinterface, dual-stack address, routing OSPFv2 dan IPv6 static.</li><li>DHCP, NAT/PAT, NTP, syslog, SSH.</li><li>ACL lalu Layer 2 security; uji setiap perubahan.</li></ol>
+<h5>Perintah bukti</h5><pre><code>show vlan brief
+show interfaces trunk
+show etherchannel summary
+show spanning-tree root
+show ip ospf neighbor
+show ip route
+show ipv6 route
+show ip dhcp binding
+show ip nat translations
+show access-lists
+show ip dhcp snooping binding
+show ip arp inspection statistics
+show ip ssh
+show ntp associations
+show logging</code></pre>
+<p><strong>Rubrik 100 poin:</strong> addressing 15, access layer 15, routing 20, services 15, security 20, verification 10, dokumentasi 5. Lulus mandiri: ≥80 dan tidak ada kriteria penerimaan kritis yang gagal.</p><p class="check">✓ R2 harus melihat summary IPv6 <code>2001:db8:50::/48</code> via R1. Guest memperoleh DHCP/SLAAC, dapat memakai UDP/TCP DNS ke server dan HTTPS ke luar melalui IPv4 maupun IPv6, tetapi akses ke prefix internal lainnya—termasuk HTTPS management—ditolak sebelum permit HTTPS eksternal dievaluasi. ICMPv6 yang diperlukan NDP dan Path MTU Discovery tetap diizinkan; kedua ACL wajib terlihat inbound pada G0/0.30.</p><p class="check">✓ Tidak ada satu running-config universal karena pilihan interface dan perangkat dapat berbeda; hasil dinilai dari state serta bukti verifikasinya.</p></div></details></div></details>
+
+
+<details class="lab-card" id="lab51">
+<summary><span class="lab-number">51</span><span class="lab-title"><h3>OSPF Adjacency Forensics</h3><p>Diagnosis neighbor yang berhenti di INIT, EXSTART, atau tidak muncul.</p><span class="tags"><span class="tag">OSPF</span><span class="tag">Troubleshooting</span><span class="tag">55 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Empat pasangan router memiliki fault berbeda: area mismatch, hello/dead mismatch, duplicate router ID, dan MTU mismatch.</p></div>
+<div class="lab-grid"><div class="panel"><h4>Empat fixture</h4><ul><li>A R1–R2: area 0 vs area 1 → tidak neighbor</li><li>B R3–R4: hello/dead 10/40 vs 5/20 → tidak neighbor</li><li>C R5–R6: RID keduanya 5.5.5.5 → duplicate RID log</li><li>D R7–R8: MTU 1500 vs 1400 → EXSTART/EXCHANGE</li></ul></div><div class="panel"><h4>Link addressing</h4><ul><li>A: 10.51.12.0/30</li><li>B: 10.51.34.0/30</li><li>C: 10.51.56.0/30</li><li>D: 10.51.78.0/30</li></ul></div></div>
+<h4>Tugas</h4><ol><li>Gunakan output neighbor/interface sebelum membaca running-config.</li><li>Cocokkan gejala dengan fault dan perbaiki satu per satu.</li><li>Buktikan semua adjacency mencapai FULL dan route kembali.</li></ol>
+<details class="answer"><summary>Lihat runbook jawaban</summary><div class="answer-content"><pre><code>show ip ospf neighbor
+show ip ospf interface g0/0
+show ip ospf interface brief
+show ip protocols
+show interface g0/0 | include MTU
+show ip ospf database router
+debug ip ospf adj</code></pre><ul><li>Tidak ada neighbor: cek interface/up, subnet, passive, area, hello/dead, authentication.</li><li>INIT: komunikasi satu arah.</li><li>EXSTART/EXCHANGE: sering MTU atau master/slave negotiation.</li><li>Duplicate RID memicu log dan LSDB tidak stabil.</li></ul><p class="check">✓ Samakan parameter yang semestinya; gunakan <code>undebug all</code>. Jangan menjadikan <code>ip ospf mtu-ignore</code> sebagai pengganti memperbaiki MTU desain.</p></div></details></div></details>
+
+<details class="lab-card" id="lab52">
+<summary><span class="lab-number">52</span><span class="lab-title"><h3>Dual-Stack Forwarding Forensics</h3><p>Prediksi next hop dari tabel IPv4 dan IPv6 yang kompleks.</p><span class="tags"><span class="tag">LPM</span><span class="tag">CEF</span><span class="tag">Dual-stack</span><span class="tag">50 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Gunakan fixture routing table berikut dan buat keputusan forwarding untuk delapan tujuan tanpa mengandalkan tebakan.</p></div>
+<div class="lab-grid"><div class="panel"><h4>IPv4 RIB</h4><pre><code>S* 0.0.0.0/0 via 192.0.2.1
+O  10.0.0.0/8 via 10.255.0.2
+S  10.10.0.0/16 via 10.255.0.3
+O  10.10.10.0/24 via 10.255.0.4
+S  10.10.10.42/32 via 10.255.0.5</code></pre></div><div class="panel"><h4>IPv6 RIB</h4><pre><code>S  ::/0 via 2001:db8:52:ff::1
+O  2001:db8:52::/48 via 2001:db8:52:ff::2
+S  2001:db8:52:10::/64 via 2001:db8:52:ff::3
+S  2001:db8:52:10::42/128 via 2001:db8:52:ff::4</code></pre></div></div>
+<div class="panel"><h4>Delapan tujuan</h4><p><code>10.10.10.42</code> · <code>10.10.10.99</code> · <code>10.10.99.1</code> · <code>192.0.2.8</code> · <code>2001:db8:52:10::42</code> · <code>2001:db8:52:10::99</code> · <code>2001:db8:52:20::1</code> · <code>2001:db8:99::1</code></p></div>
+<h4>Tugas</h4><ol><li>Terapkan longest prefix match untuk kedelapan tujuan.</li><li>Catat matched prefix, source code, next hop, dan alasan.</li><li>Hapus sementara /32 dan /128 lalu amati fallback ke prefix berikutnya.</li><li>Bandingkan RIB dengan CEF/FIB serta uji return path.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><ul><li><code>10.10.10.42</code> → /32 via 10.255.0.5</li><li><code>10.10.10.99</code> → /24 via 10.255.0.4</li><li><code>10.10.99.1</code> → /16 via 10.255.0.3</li><li><code>192.0.2.8</code> → /0 via 192.0.2.1</li><li><code>2001:db8:52:10::42</code> → /128 via 2001:db8:52:ff::4</li><li><code>2001:db8:52:10::99</code> → /64 via 2001:db8:52:ff::3</li><li><code>2001:db8:52:20::1</code> → /48 via 2001:db8:52:ff::2</li><li><code>2001:db8:99::1</code> → ::/0 via 2001:db8:52:ff::1</li></ul><pre><code>show ip route 10.10.10.42
+show ip cef 10.10.10.42 detail
+show ipv6 route 2001:db8:52:10::42
+show ipv6 cef 2001:db8:52:10::42
+traceroute 10.10.10.42
+traceroute ipv6 2001:db8:52:10::42</code></pre><p>Prefix paling panjang menang sebelum AD/metric. Route harus resolvable dan return path tetap diperlukan.</p><p class="check">✓ Kedelapan baris cocok dengan fixture; setelah /32 atau /128 dihapus, tujuan tersebut jatuh ke /24 atau /64.</p></div></details></div></details>
+
+<details class="lab-card" id="lab53">
+<summary><span class="lab-number">53</span><span class="lab-title"><h3>Dual-Stack Security Policy</h3><p>Jaga policy IPv4 dan IPv6 tetap setara.</p><span class="tags"><span class="tag">IPv6 ACL</span><span class="tag">Security</span><span class="tag">55 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Guest dual-stack hanya boleh DNS dan HTTPS ke server. Policy IPv4 sudah ada, tetapi IPv6 masih terbuka.</p></div>
+<h4>Tugas</h4><ol><li>Buat IPv6 traffic-filter setara dengan IPv4 ACL.</li><li>Jangan memblokir Neighbor Discovery yang diperlukan.</li><li>Terapkan inbound pada interface guest dan uji matriks dual-stack.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>ip access-list extended GUEST4
+ permit udp 10.53.30.0 0.0.0.255 host 10.53.50.10 eq 53
+ permit tcp 10.53.30.0 0.0.0.255 host 10.53.50.10 eq 53
+ permit tcp 10.53.30.0 0.0.0.255 host 10.53.50.10 eq 443
+ deny ip 10.53.30.0 0.0.0.255 any log
+ipv6 access-list GUEST6
+ permit icmp any any router-solicitation
+ permit icmp any any nd-ns
+ permit icmp any any nd-na
+ permit udp 2001:db8:53:30::/64 host 2001:db8:53:50::10 eq 53
+ permit tcp 2001:db8:53:30::/64 host 2001:db8:53:50::10 eq 53
+ permit tcp 2001:db8:53:30::/64 host 2001:db8:53:50::10 eq 443
+ deny ipv6 2001:db8:53:30::/64 any log
+interface g0/0.30
+ ip access-group GUEST4 in
+ ipv6 traffic-filter GUEST6 in
+show ipv6 access-list GUEST6</code></pre><p class="check">✓ HTTPS/DNS IPv4 dan IPv6 berhasil, SSH serta akses management gagal, SLAAC/NDP tetap bekerja. Verifikasi behavior ICMPv6 pada image IOS yang digunakan.</p></div></details></div></details>
+
+<details class="lab-card" id="lab54">
+<summary><span class="lab-number">54</span><span class="lab-title"><h3>DMZ Publishing: Static NAT + ACL + Routing</h3><p>Publikasikan satu layanan tanpa membuka seluruh server.</p><span class="tags"><span class="tag">NAT</span><span class="tag">ACL</span><span class="tag">DMZ</span><span class="tag">60 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Web server DMZ <code>172.16.50.10</code> dipublikasikan sebagai <code>203.0.113.10</code>. Internet hanya boleh HTTPS; ADMIN-PC di LAN internal R2 boleh SSH langsung ke alamat private. R1 dan R2 bertetangga OSPF melalui link transit khusus.</p></div>
+<div class="lab-grid"><div class="panel"><h4>Addressing</h4><ul><li>R1 G0/0 DMZ: <code>172.16.50.1/24</code></li><li>WEB: <code>172.16.50.10/24</code>, GW <code>172.16.50.1</code></li><li>R1 G0/1 outside: <code>203.0.113.2/24</code>; ISP: <code>203.0.113.1/24</code></li><li>R1 G0/2 ↔ R2 G0/0: <code>10.54.12.1/30</code> ↔ <code>10.54.12.2/30</code></li><li>R2 G0/1 internal: <code>10.54.10.1/24</code>; ADMIN-PC: <code>10.54.10.10/24</code>, GW <code>10.54.10.1</code></li></ul></div><div class="panel"><h4>Routing rule</h4><p>OSPF mengiklankan DMZ, transit, dan LAN admin. Interface user/DMZ dibuat passive; adjacency hanya terbentuk pada link R1–R2. Public block tidak dimasukkan ke OSPF.</p></div></div>
+<h4>Tugas</h4><ol><li>Tandai interface DMZ sebagai NAT inside dan interface ISP sebagai NAT outside, lalu buat static NAT.</li><li>Buat outside ACL yang hanya mengizinkan TCP 443 ke alamat global server.</li><li>Bangun adjacency OSPF R1–R2 dan pastikan R2 mempelajari route DMZ tanpa mengiklankan public block.</li><li>Uji HTTPS dari sisi ISP, SSH private dari ADMIN-PC, serta trafik outside yang harus ditolak.</li></ol>
+<details class="answer"><summary>Lihat blueprint jawaban</summary><div class="answer-content"><h5>R1 — DMZ, outside, transit, NAT, ACL, dan OSPF</h5><pre><code>configure terminal
+interface g0/0
+ ip address 172.16.50.1 255.255.255.0
+ ip nat inside
+ no shutdown
+exit
+interface g0/1
+ ip address 203.0.113.2 255.255.255.0
+ ip nat outside
+ no shutdown
+exit
+interface g0/2
+ ip address 10.54.12.1 255.255.255.252
+ no shutdown
+exit
+ip route 0.0.0.0 0.0.0.0 203.0.113.1
+ip nat inside source static 172.16.50.10 203.0.113.10
+ip access-list extended OUTSIDE-IN
+ permit tcp any host 203.0.113.10 eq 443
+ deny ip any any log
+exit
+interface g0/1
+ ip access-group OUTSIDE-IN in
+exit
+router ospf 10
+ passive-interface default
+ no passive-interface g0/2
+ network 172.16.50.0 0.0.0.255 area 0
+ network 10.54.12.0 0.0.0.3 area 0
+! Jangan tambahkan 203.0.113.0/24 ke OSPF
+end
+show ip nat translations
+show access-lists OUTSIDE-IN
+show ip ospf neighbor
+show ip route 0.0.0.0</code></pre><h5>R2 — transit OSPF dan LAN admin</h5><pre><code>configure terminal
+interface g0/0
+ ip address 10.54.12.2 255.255.255.252
+ no shutdown
+exit
+interface g0/1
+ ip address 10.54.10.1 255.255.255.0
+ no shutdown
+exit
+router ospf 10
+ passive-interface default
+ no passive-interface g0/0
+ network 10.54.12.0 0.0.0.3 area 0
+ network 10.54.10.0 0.0.0.255 area 0
+end
+show ip ospf neighbor
+show ip route 172.16.50.0</code></pre><p class="check">✓ Neighbor R1–R2 harus FULL pada link <code>10.54.12.0/30</code>; R2 mempelajari <code>172.16.50.0/24</code> melalui OSPF dan R1 mempelajari <code>10.54.10.0/24</code>. HTTPS dari host sisi ISP ke <code>203.0.113.10</code> sukses; SSH/ICMP outside ditolak sesuai policy; ADMIN-PC dapat SSH ke <code>172.16.50.10</code> melalui jalur private. Buktikan NAT dan ACL dengan translation serta hit counter.</p></div></details></div></details>
+
+<details class="lab-card" id="lab55">
+<summary><span class="lab-number">55</span><span class="lab-title"><h3>Secure Access-Layer Attack Lab</h3><p>Hadapi rogue DHCP, ARP spoof, MAC flood, dan rogue switch.</p><span class="tags"><span class="tag">Layer 2 Security</span><span class="tag">Defense</span><span class="tag">65 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Bangun access switch VLAN 10 dengan uplink tepercaya. Lakukan empat failure injection secara bergantian dan dokumentasikan kontrol yang menghentikannya.</p></div>
+<h4>Tugas</h4><ol><li>Terapkan DHCP snooping dan rate limit.</li><li>Aktifkan DAI berdasarkan binding.</li><li>Gunakan sticky port security maximum 2.</li><li>Aktifkan PortFast + BPDU Guard pada edge, bukan uplink.</li></ol>
+<details class="answer"><summary>Lihat template jawaban</summary><div class="answer-content"><pre><code>ip dhcp snooping
+ip dhcp snooping vlan 10
+ip arp inspection vlan 10
+interface g0/1
+ ip dhcp snooping trust
+ ip arp inspection trust
+interface range f0/1-24
+ ip dhcp snooping limit rate 15
+ switchport mode access
+ switchport access vlan 10
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security mac-address sticky
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+show ip dhcp snooping binding
+show ip arp inspection statistics
+show port-security
+show interfaces status err-disabled</code></pre><p class="check">✓ Rogue DHCP offer dibuang, invalid ARP dihitung DAI, MAC ketiga melanggar policy, dan rogue switch membuat edge port err-disabled. Terapkan range hanya pada port host aktual—bukan uplink atau port yang tidak digunakan.</p></div></details></div></details>
+
+<details class="lab-card" id="lab56">
+<summary><span class="lab-number">56</span><span class="lab-title"><h3>Resilient Branch Services</h3><p>Gabungkan DHCP relay, DNS, NTP, syslog, dan backup route.</p><span class="tags"><span class="tag">IP Services</span><span class="tag">Resilience</span><span class="tag">60 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>LAN cabang <code>10.56.10.0/24</code> memakai layanan pusat melalui primary WAN dan floating static backup. Saat primary gagal, lease, DNS, waktu, dan logging harus tetap berfungsi.</p></div>
+<h4>Tugas</h4><ol><li>Konfigurasikan helper ke dua DHCP server jika simulator mendukung.</li><li>Berikan dua DNS server melalui pool.</li><li>Set NTP prefer + backup dan dua syslog destinations.</li><li>Uji layanan sebelum/sesudah primary route gagal.</li></ol>
+<details class="answer"><summary>Lihat blueprint jawaban</summary><div class="answer-content"><h5>BRANCH-ROUTER — DHCP relay</h5><pre><code>configure terminal
+interface g0/0
+ ip helper-address 10.99.99.50
+ ip helper-address 10.199.99.50
+end</code></pre><h5>DHCP-A — split scope .21–.127</h5><pre><code>configure terminal
+ip dhcp excluded-address 10.56.10.1 10.56.10.20
+ip dhcp excluded-address 10.56.10.128 10.56.10.254
+ip dhcp pool BRANCH-A
+ network 10.56.10.0 255.255.255.0
+ default-router 10.56.10.1
+ dns-server 10.99.99.53 10.199.99.53
+end</code></pre><h5>DHCP-B — split scope .128–.254</h5><pre><code>configure terminal
+ip dhcp excluded-address 10.56.10.1 10.56.10.127
+ip dhcp pool BRANCH-B
+ network 10.56.10.0 255.255.255.0
+ default-router 10.56.10.1
+ dns-server 10.99.99.53 10.199.99.53
+end</code></pre><h5>BRANCH-ROUTER — management services dan route</h5><pre><code>configure terminal
+ntp server 10.99.99.50 prefer
+ntp server 10.199.99.50
+logging host 10.99.99.60
+logging host 10.199.99.60
+ip route 0.0.0.0 0.0.0.0 10.0.12.2
+ip route 0.0.0.0 0.0.0.0 10.0.13.2 200
+end</code></pre><h5>Verifikasi</h5><pre><code>show ip interface g0/0
+show ip route 0.0.0.0
+show ntp associations
+show logging</code></pre><p class="check">✓ Buat test matrix per layanan. Route backup saja tidak cukup bila server tidak tersedia melalui jalur backup atau tidak memiliki return route.</p></div></details></div></details>
+
+<details class="lab-card" id="lab57">
+<summary><span class="lab-number">57</span><span class="lab-title"><h3>End-to-End WLAN Troubleshooting</h3><p>Telusuri kegagalan dari association sampai routing.</p><span class="tags"><span class="tag">WLAN</span><span class="tag">Troubleshooting</span><span class="tag">55 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Client melihat SSID <code>GUEST57</code> dan berhasil association, tetapi tidak mendapat IP. WLAN map ke VLAN 30; trunk WLC hanya mengizinkan 20,99 dan helper VLAN30 salah menunjuk <code>10.99.99.51</code> alih-alih <code>10.99.99.50</code>.</p></div>
+<div class="lab-grid"><div class="panel"><h4>Expected state</h4><ul><li>Guest subnet 10.57.30.0/24, gateway .1</li><li>DHCP server 10.99.99.50</li><li>WLC trunk allowed 20,30,99</li><li>AP-1/AP-2 memancarkan GUEST57</li></ul></div><div class="panel"><h4>Dua fault</h4><ol><li>VLAN30 hilang dari allowed list</li><li>Helper address berakhir .51</li></ol></div></div>
+<h4>Tugas</h4><ol><li>Pisahkan fase RF discovery, authentication, association, DHCP, DNS, dan forwarding.</li><li>Periksa WLC client detail dan switch trunk.</li><li>Perbaiki dua fault lalu buktikan roaming antardua AP.</li></ol>
+<details class="answer"><summary>Lihat runbook jawaban</summary><div class="answer-content"><ol><li>Association sudah berhasil, jadi mulai dari mapping VLAN dan jalur DHCP.</li><li>Tambahkan VLAN30 ke trunk tanpa menimpa allowed list lain.</li><li>Ganti helper .51 menjadi .50, renew lease, lalu uji gateway/DNS.</li><li>Pindahkan client dari coverage AP-1 ke AP-2 dan catat BSSID serta packet loss.</li></ol><pre><code>show interfaces trunk
+show vlan brief
+show ip dhcp binding
+show access-lists
+interface port-channel 10
+ switchport trunk allowed vlan add 30
+interface vlan 30
+ no ip helper-address 10.99.99.51
+ ip helper-address 10.99.99.50</code></pre><p class="check">✓ Client memperoleh 10.57.30.0/24, ping gateway/DNS berhasil, dan saat roaming BSSID berubah ke AP-2 tanpa kehilangan lebih dari satu ping pada simulator.</p></div></details></div></details>
+
+<details class="lab-card" id="lab58">
+<summary><span class="lab-number">58</span><span class="lab-title"><h3>Safe REST API Change Workflow</h3><p>Lakukan perubahan terkontrol dengan pre-check dan rollback.</p><span class="tags"><span class="tag">REST API</span><span class="tag">CRUD</span><span class="tag">55 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Ubah description interface melalui controller API. Hindari perubahan ganda dan tangani 401, 404, 409, serta 429.</p></div>
+<h4>Tugas</h4><ol><li>GET state awal dan simpan JSON rollback.</li><li>PATCH hanya field description dengan token.</li><li>GET ulang untuk verifikasi dan susun rollback.</li><li>Jelaskan idempotency, rate limiting, dan authentication.</li></ol>
+<details class="answer"><summary>Lihat jawaban &amp; verifikasi</summary><div class="answer-content"><pre><code>BASE=https://controller.lab/api/v1/interfaces/42
+AUTH="Authorization: Bearer $TOKEN"
+
+# 1. Pre-check, simpan body + header/ETag
+curl --cacert lab-ca.pem -sS -D before.headers \
+  -H "$AUTH" -o before.json "$BASE"
+ETAG=$(awk 'tolower($1)=="etag:"{print $2}' before.headers | tr -d '\r')
+OLD_DESC=$(jq -r '.description' before.json)
+
+# 2. Conditional PATCH dan tangkap status
+curl --cacert lab-ca.pem -sS -o patch.json -w "HTTP %{http_code}\n" \
+  -X PATCH -H "$AUTH" -H "Content-Type: application/json" \
+  -H "If-Match: $ETAG" \
+  -d '{"description":"WAN-PRIMARY"}' "$BASE"
+
+# 3. GET-after
+curl --cacert lab-ca.pem -sS -H "$AUTH" -o after.json "$BASE"
+jq '{id,description}' before.json after.json
+
+# 4. Rollback ke nilai awal
+ROLLBACK=$(jq -n --arg d "$OLD_DESC" '{description:$d}')
+curl --cacert lab-ca.pem -sS -X PATCH -H "$AUTH" \
+  -H "Content-Type: application/json" -d "$ROLLBACK" "$BASE"</code></pre><p>PATCH yang menetapkan nilai sama harus menghasilkan state akhir sama (idempotent). 401 berarti credential invalid; 404 resource salah; 409/412 conflict atau ETag usang—GET ulang sebelum retry; 429 harus menghormati header <code>Retry-After</code> dan exponential backoff. Token disimpan di environment/vault, bukan source atau log.</p><p class="check">✓ Arsip berisi before.json, before.headers, status PATCH, after.json, dan bukti rollback; tidak ada token pada output.</p></div></details></div></details>
+
+<details class="lab-card" id="lab59">
+<summary><span class="lab-number">59</span><span class="lab-title"><h3>Automated Configuration Compliance</h3><p>Audit 20 perangkat dan perbaiki drift secara idempotent.</p><span class="tags"><span class="tag">Ansible</span><span class="tag">Compliance</span><span class="tag">60 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Skenario</strong><p>Standard mewajibkan SSH-only, NTP, syslog, banner, dan tidak boleh ada HTTP server. Tiga perangkat mengalami drift.</p></div>
+<h4>Tugas</h4><ol><li>Definisikan desired state dan inventory groups.</li><li>Jalankan audit/check mode sebelum perubahan.</li><li>Terapkan fix, jalankan ulang, dan buktikan changed=0.</li><li>Buat rollback serta human approval gate.</li></ol>
+<details class="answer"><summary>Lihat contoh jawaban</summary><div class="answer-content"><pre><code># inventory.yml
+all:
+  children:
+    routers:
+      hosts:
+        R1: {ansible_host: 10.99.99.11}
+        R2: {ansible_host: 10.99.99.12}
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_network_os: cisco.ios.ios
+    ansible_user: admin
+    ansible_password: "{{ vault_ios_password }}"
+
+# baseline.yml
+- name: CCNA compliant baseline
+  hosts: routers
+  gather_facts: false
+  serial: 1
+  tasks:
+    - name: Capture rollback backup
+      cisco.ios.ios_config:
+        backup: true
+
+    - name: Configure baseline
+      cisco.ios.ios_config:
+        lines:
+          - no ip http server
+          - no ip http secure-server
+          - ip domain-name lab.local
+          - ip ssh version 2
+          - ntp server 10.99.99.50
+          - logging host 10.99.99.60
+        save_when: modified
+
+    - name: Set legal banner
+      cisco.ios.ios_banner:
+        banner: motd
+        text: Authorized access only
+        state: present
+
+    - name: Enforce SSH on every VTY
+      cisco.ios.ios_config:
+        parents: line vty 0 15
+        lines:
+          - login local
+          - transport input ssh
+
+# Workflow
+# Phase 1 — canary R1 saja
+# ansible-playbook -i inventory.yml baseline.yml --limit R1 --check --diff
+# Review diff, approve, lalu terapkan ke R1:
+# ansible-playbook -i inventory.yml baseline.yml --limit R1 --diff
+# Jalankan acceptance test R1 dan catat approval untuk melanjutkan.
+
+# Phase 2 — perangkat selain canary
+# ansible-playbook -i inventory.yml baseline.yml --limit 'routers:!R1' --check --diff
+# Review diff + approve, lalu:
+# ansible-playbook -i inventory.yml baseline.yml --limit 'routers:!R1' --diff
+
+# Phase 3 — buktikan idempotency seluruh inventory
+# ansible-playbook -i inventory.yml baseline.yml --check --diff
+# Expected: changed=0; restore backup jika acceptance test gagal.</code></pre><p>Bootstrap akun lokal dan RSA key sekali pada perangkat baru (<code>username admin privilege 15 secret ...</code> dan <code>crypto key generate rsa modulus 2048</code>), lalu lakukan pre-check <code>show crypto key mypubkey rsa</code>. Baseline berulang sengaja tidak mereset secret agar tetap idempotent. Simpan credential dengan Ansible Vault dan gunakan file backup sebagai rollback. <code>serial: 1</code> hanya membatasi rolling batch menjadi satu host; canary dan human approval gate dibentuk oleh <code>--limit R1</code>, acceptance test, serta approval eksplisit sebelum phase berikutnya.</p><p class="check">✓ Check mode hanya menampilkan intended diff; canary R1 lulus acceptance test sebelum rollout, approval evidence tersimpan, seluruh requirement tercakup, VTY 0–15 SSH-only, run idempotency menunjukkan changed=0, dan backup dapat dipakai untuk rollback.</p></div></details></div></details>
+
+<details class="lab-card" id="lab60">
+<summary><span class="lab-number">60</span><span class="lab-title"><h3>CCNA v1.1 Practical Mock Exam</h3><p>Selesaikan jaringan baru tanpa panduan langkah demi langkah.</p><span class="tags"><span class="tag">Final Challenge</span><span class="tag">All Domains</span><span class="tag">120 menit</span></span></span></summary>
+<div class="lab-body"><div class="brief"><strong>Ujian praktik</strong><p>Bangun jaringan HQ–Branch dual-stack: 4 router, 4 switch, 4 VLAN, redundant Layer 2, OSPF area 0, layanan pusat, wireless guest, NAT, ACL, dan automation artifact.</p></div>
+<div class="lab-grid"><div class="panel"><h4>Requirement</h4><ul><li>VLSM dari <code>10.60.0.0/22</code></li><li>IPv6 dari <code>2001:db8:60::/48</code></li><li>LACP + Rapid PVST+</li><li>OSPFv2 + IPv6 static</li><li>DHCP relay, PAT, NTP, syslog, SSH</li><li>Guest ACL + L2 security</li><li>JSON inventory atau Ansible baseline</li></ul></div><div class="panel"><h4>Failure injection</h4><ul><li>Native VLAN mismatch</li><li>Wrong OSPF area</li><li>ACL wrong direction</li><li>Missing return route</li><li>Rogue DHCP</li></ul></div></div>
+<div class="lab-grid"><div class="panel"><h4>Reference topology</h4><pre><code>HQ-PC ─ SW1 ═Po1═ SW2 ─ R1 ─ R3 ─ R4 ─ SW3 ─ BR-PC
+                 │       │
+               WLC/AP   R2 ─ SW4 ─ SERVICES/ISP</code></pre></div><div class="panel"><h4>IPv4 plan</h4><ul><li>HQ users: 10.60.0.0/25, GW .1</li><li>Voice: 10.60.0.128/26, GW .129</li><li>Guest: 10.60.0.192/26, GW .193</li><li>Branch: 10.60.1.0/25, GW .1</li><li>Services: 10.60.1.128/27, server .150</li><li>R1–R3 .160/30; R2–R3 .164/30; R3–R4 .168/30</li></ul></div></div>
+<div class="panel"><h4>IPv6 plan</h4><p>Gunakan <code>2001:db8:60:10::/64</code>, <code>:20::/64</code>, <code>:30::/64</code>, <code>:110::/64</code>, dan transit <code>:ff13::/64</code>, <code>:ff23::/64</code>, <code>:ff34::/64</code>. Gateway tiap VLAN adalah <code>::1</code>.</p></div>
+<details class="answer"><summary>Lihat rubrik &amp; acceptance test</summary><div class="answer-content"><h5>Acceptance test</h5><ol><li>Seluruh host mendapat parameter IP yang benar dan mencapai gateway dual-stack.</li><li>Semua adjacency point-to-point OSPF FULL; 2-WAY antar-DROTHER pada broadcast segment diterima sebagai normal.</li><li>Guest hanya internet/DNS/HTTPS; management hanya dari admin VLAN via SSH.</li><li>Putus satu LACP member: trafik tetap berjalan.</li><li>Rogue DHCP dan ARP invalid diblokir.</li><li>NAT, NTP, syslog, dan automation artifact terverifikasi.</li></ol><h5>Golden-state checklist</h5><ul><li>SW1–SW2 Po1 LACP trunk native 999, allowed 10,20,30,99.</li><li>R1/R2/R3/R4 OSPF area 0; R3 mengiklankan default setelah route ISP tersedia.</li><li>R4 memiliki IPv6 static default via R3.</li><li>Helper berada pada gateway client; lease diperiksa pada DHCP server 10.60.1.150, bukan relay.</li><li>PAT hanya menerjemahkan internal prefixes; management ACL hanya mengizinkan VLAN99.</li></ul><h5>Fault key</h5><ol><li>Samakan native VLAN kedua ujung menjadi 999.</li><li>Ubah interface OSPF yang salah kembali ke area 0.</li><li>Pindahkan ACL ke interface/direction sesuai source policy.</li><li>Tambahkan return route atau OSPF advertisement yang hilang.</li><li>Trust hanya uplink DHCP resmi; access ports tetap untrusted.</li></ol><h5>Rubrik 100 poin</h5><p>Addressing 10, Layer 2 15, routing 20, services 15, security 20, wireless 5, automation 5, troubleshooting evidence 5, dokumentasi 5. Target lulus: ≥80 tanpa critical security failure.</p><pre><code>show interfaces trunk
+show etherchannel summary
+show spanning-tree root
+show ip ospf neighbor
+show ip route
+show ipv6 route
+show ip dhcp binding
+show ip nat translations
+show access-lists
+show ip dhcp snooping binding
+show ip arp inspection statistics
+show ip ssh
+show ntp associations
+show logging</code></pre><p class="check">✓ Jawaban dinilai dari state dan bukti, bukan kesamaan urutan command. Simpan before/after output dan catatan alasan setiap perbaikan.</p></div></details></div></details>
+    </div>
+  </section>
+
+  <section class="curriculum" id="cakupan">
+    <p class="eyebrow">Cross-reference</p>
+    <h2>Selaras dengan enam domain CCNA v1.1.</h2>
+    <p>Daftar berikut menunjukkan domain utama setiap lab; lab integrasi dapat muncul pada lebih dari satu domain. Butir “describe/explain” disisipkan sebagai analisis pada skenario, jawaban, dan checklist.</p>
+    <div class="domain-grid">
+      <div class="domain-box"><strong>20%</strong><span>Network Fundamentals · Lab 01–04, 11–19, 40, 49–50, 52, 60</span></div>
+      <div class="domain-box"><strong>20%</strong><span>Network Access · Lab 05–08, 15–16, 19, 21–23, 38, 41, 44, 50, 55, 57, 60</span></div>
+      <div class="domain-box"><strong>25%</strong><span>IP Connectivity · Lab 09, 24–26, 31–33, 42, 46, 49–52, 54, 56, 60</span></div>
+      <div class="domain-box"><strong>10%</strong><span>IP Services · Lab 10, 20, 27, 35–36, 39, 43, 45, 50, 54, 56–57, 60</span></div>
+      <div class="domain-box"><strong>15%</strong><span>Security · Lab 01, 18, 28–30, 34, 37, 43–44, 50, 53–55, 60</span></div>
+      <div class="domain-box"><strong>10%</strong><span>Automation · Lab 47–48, 58–60</span></div>
+    </div>
+    <p class="note" style="color:rgba(255,255,255,.58);margin-top:22px">Lab 18 kini memuat threat/vulnerability/exploit/mitigation, awareness dan physical access, password alternatives, serta IPsec remote/site-to-site. Lab berlabel pengayaan/platform-dependent memberi praktik tambahan di luar kata kerja minimum blueprint.</p>
+  </section>
+</main>
+
+<footer><div class="footer-inner"><span>CCNA Lab Atlas · Dibuat berdasarkan blueprint 200-301 Exam v1.1 (2024).</span><a class="back-top" href="#top">Kembali ke atas ↑</a></div></footer>
+
+
+<script src="app.js" defer></script>
+</body></html>

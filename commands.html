@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="id"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Rangkuman konfigurasi Cisco IOS Command sesuai kurikulum CCNA 200-301 v1.1.">
+  <title>Rangkuman Cisco IOS Command — CCNA v1.1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body id="top">
+<header class="hero command-hero">
+  <div class="hero-grid">
+    <div>
+      <p class="eyebrow">200-301 · Exam v1.1 · IOS quick reference</p>
+      <h1>Rangkuman konfigurasi</h1>
+      <div class="cta-row"><a class="button primary" href="index.html">Beranda</a><a class="button" href="theory.html">Rangkuman materi</a><a class="button" href="labs.html">Latihan lab</a><a class="button" href="questions.html">Latihan soal</a></div>
+    </div>
+    <aside class="exam-card" aria-label="Isi rangkuman Cisco IOS">
+      <h2>26 kartu command</h2><p>Dikelompokkan menurut enam domain ujian; panjang meter menunjukkan jumlah kartu, bukan bobot ujian.</p>
+      <div class="domain-row"><span>Network Fundamentals</span><b>01–04</b><span class="meter"><i style="width:40%"></i></span></div>
+      <div class="domain-row"><span>Network Access</span><b>05–10</b><span class="meter"><i style="width:60%"></i></span></div>
+      <div class="domain-row"><span>IP Connectivity</span><b>11–14</b><span class="meter"><i style="width:40%"></i></span></div>
+      <div class="domain-row"><span>IP Services</span><b>15–20</b><span class="meter"><i style="width:60%"></i></span></div>
+      <div class="domain-row"><span>Security</span><b>21–24</b><span class="meter"><i style="width:40%"></i></span></div>
+      <div class="domain-row"><span>Automation</span><b>25–26</b><span class="meter"><i style="width:20%"></i></span></div>
+    </aside>
+  </div>
+</header>
+
+<main class="page command-page">
+  <section class="command-summary" id="commands">
+    <header class="command-heading">
+      <div><span class="section-kicker">Quick reference · CCNA 200-301 v1.1</span><h2>Rangkuman Cisco IOS Command.</h2></div>
+      <p>Template konfigurasi dan verifikasi yang paling relevan dengan blueprint. Ganti nilai di dalam tanda <code>&lt;...&gt;</code>, sesuaikan nama interface, dan periksa dukungan image sebelum digunakan.</p>
+    </header>
+
+    <nav class="command-jump" aria-label="Domain command">
+      <a href="#cmd-fundamental">1.0 Fundamentals</a>
+      <a href="#cmd-access">2.0 Access</a>
+      <a href="#cmd-connectivity">3.0 Connectivity</a>
+      <a href="#cmd-services">4.0 Services</a>
+      <a href="#cmd-security">5.0 Security</a>
+      <a href="#cmd-automation">6.0 Automation</a>
+    </nav>
+
+    <div class="command-domain" id="cmd-fundamental">
+      <header><span class="domain-number">1.0</span><div><h3>Network Fundamentals</h3><p>Baseline, interface, IPv4/IPv6, dan troubleshooting fisik.</p></div><b>20%</b></header>
+      <div class="command-grid">
+        <details class="command-card"><summary><span>01</span><div><strong>Baseline perangkat</strong><small>Identity · password · banner · save</small></div></summary><div class="command-content"><pre><code>enable
+configure terminal
+hostname &lt;HOSTNAME&gt;
+no ip domain-lookup
+enable secret &lt;ENABLE_SECRET&gt;
+service password-encryption
+username &lt;USER&gt; privilege 15 secret &lt;USER_SECRET&gt;
+banner motd #AKSES HANYA UNTUK PENGGUNA RESMI#
+end
+copy running-config startup-config</code></pre><p><code>service password-encryption</code> hanya mengobfuscate password plaintext; gunakan <code>secret</code> untuk credential lokal.</p></div></details>
+
+        <details class="command-card"><summary><span>02</span><div><strong>IPv4 &amp; IPv6 interface</strong><small>Address · EUI-64 · link-local</small></div></summary><div class="command-content"><pre><code>configure terminal
+ipv6 unicast-routing
+interface &lt;INTERFACE&gt;
+ description &lt;DESCRIPTION&gt;
+ ip address &lt;IPV4&gt; &lt;MASK&gt;
+ ipv6 address &lt;IPV6&gt;/&lt;PREFIX&gt;
+ ipv6 address &lt;PREFIX64&gt;/64 eui-64
+ ipv6 address fe80::1 link-local
+ no shutdown
+end
+show ip interface brief
+show ipv6 interface brief
+show interfaces &lt;INTERFACE&gt;</code></pre><p>Pilih salah satu metode global IPv6 manual atau EUI-64; jangan memasang dua global address tanpa alasan desain.</p></div></details>
+
+        <details class="command-card"><summary><span>03</span><div><strong>Interface troubleshooting</strong><small>Status · duplex · CRC · counters</small></div></summary><div class="command-content"><p class="command-table-title">Verifikasi awal:</p><pre><code>show interfaces status
+show interfaces &lt;INTERFACE&gt;
+show interfaces counters errors
+show controllers &lt;INTERFACE&gt;</code></pre><p class="command-table-title">Pulihkan speed/duplex otomatis bila desain memang memakai autonegotiation:</p><pre><code>configure terminal
+interface &lt;INTERFACE&gt;
+ speed auto
+ duplex auto
+ no shutdown
+end
+show interfaces &lt;INTERFACE&gt;</code></pre><p>Command <code>show interfaces status</code> dan <code>show controllers</code> tersedia pada platform tertentu. CRC/input errors mengarah ke media/transceiver atau mismatch; late collision sering menunjukkan duplex mismatch atau segment terlalu panjang.</p></div></details>
+
+        <details class="command-card"><summary><span>04</span><div><strong>Switching &amp; MAC table</strong><small>Learning · aging · flooding</small></div></summary><div class="command-content"><pre><code>show mac address-table
+show mac address-table dynamic
+show mac address-table interface &lt;INTERFACE&gt;
+show interfaces &lt;INTERFACE&gt; switchport
+show mac address-table aging-time</code></pre><p>Switch mempelajari source MAC pada port masuk. Unknown unicast dan broadcast di-flood hanya dalam VLAN yang sama. <code>clear mac address-table dynamic</code> sengaja tidak dimasukkan ke blok salin karena menghapus entry dinamis dan dapat memicu flooding sementara; jalankan hanya saat troubleshooting terkontrol.</p></div></details>
+      </div>
+    </div>
+
+    <div class="command-domain" id="cmd-access">
+      <header><span class="domain-number">2.0</span><div><h3>Network Access</h3><p>VLAN, trunk, inter-VLAN, discovery, EtherChannel, dan STP.</p></div><b>20%</b></header>
+      <div class="command-grid">
+        <details class="command-card"><summary><span>05</span><div><strong>VLAN, access &amp; voice</strong><small>Normal-range VLAN · port membership</small></div></summary><div class="command-content"><pre><code>configure terminal
+vlan &lt;DATA_VLAN&gt;
+ name &lt;DATA_NAME&gt;
+vlan &lt;VOICE_VLAN&gt;
+ name &lt;VOICE_NAME&gt;
+interface &lt;ACCESS_PORT&gt;
+ switchport mode access
+ switchport access vlan &lt;DATA_VLAN&gt;
+ switchport voice vlan &lt;VOICE_VLAN&gt;
+ spanning-tree portfast
+end
+show vlan brief
+show interfaces &lt;ACCESS_PORT&gt; switchport</code></pre></div></details>
+
+        <details class="command-card"><summary><span>06</span><div><strong>802.1Q trunk</strong><small>Native VLAN · allowed list</small></div></summary><div class="command-content"><pre><code>configure terminal
+interface &lt;TRUNK_PORT&gt;
+ switchport mode trunk
+ switchport trunk native vlan &lt;NATIVE_VLAN&gt;
+ switchport trunk allowed vlan &lt;LIST&gt;
+ no shutdown
+end
+show interfaces trunk
+show interfaces &lt;TRUNK_PORT&gt; switchport</code></pre><p><strong>Perhatian:</strong> <code>switchport trunk allowed vlan &lt;LIST&gt;</code> mengganti daftar yang ada. Untuk menambahkan VLAN tanpa menimpa daftar, gunakan <code>switchport trunk allowed vlan add &lt;VLAN&gt;</code>. Native dan allowed VLAN harus konsisten pada kedua ujung. Pada platform lama mungkin diperlukan <code>switchport trunk encapsulation dot1q</code>.</p></div></details>
+
+        <details class="command-card"><summary><span>07</span><div><strong>Inter-VLAN routing</strong><small>Router-on-a-stick · SVI · routed port</small></div></summary><div class="command-content"><p class="command-table-title">Opsi A — router-on-a-stick:</p><pre><code>configure terminal
+interface &lt;PHYSICAL&gt;
+ no shutdown
+interface &lt;PHYSICAL&gt;.&lt;VLAN_ID&gt;
+ encapsulation dot1q &lt;VLAN_ID&gt;
+ ip address &lt;GATEWAY&gt; &lt;MASK&gt;
+end
+show ip interface brief</code></pre><p class="command-table-title">Opsi B — SVI pada multilayer switch:</p><pre><code>configure terminal
+vlan &lt;VLAN_ID&gt;
+ip routing
+interface vlan &lt;VLAN_ID&gt;
+ ip address &lt;GATEWAY&gt; &lt;MASK&gt;
+ no shutdown
+end
+show ip interface brief</code></pre><p class="command-table-title">Opsi C — routed port:</p><pre><code>configure terminal
+ip routing
+interface &lt;L3_PORT&gt;
+ no switchport
+ ip address &lt;IPV4&gt; &lt;MASK&gt;
+ no shutdown
+end
+show ip interface brief</code></pre><p>Pilih satu opsi sesuai topologi. SVI memerlukan VLAN aktif dan minimal satu member/trunk yang forwarding agar line protocol up. Dukungan <code>no switchport</code> dan <code>ip routing</code> bergantung model/image switch.</p></div></details>
+
+        <details class="command-card"><summary><span>08</span><div><strong>CDP &amp; LLDP</strong><small>Layer 2 neighbor discovery</small></div></summary><div class="command-content"><pre><code>configure terminal
+cdp run
+lldp run
+interface &lt;INTERFACE&gt;
+ cdp enable
+ lldp transmit
+ lldp receive
+end
+show cdp neighbors
+show cdp neighbors detail
+show lldp neighbors
+show lldp neighbors detail</code></pre><p>Untuk menonaktifkan CDP hanya pada satu interface gunakan <code>no cdp enable</code>; <code>no cdp run</code> menonaktifkannya secara global. Dukungan detail LLDP/CDP dapat berbeda menurut platform.</p></div></details>
+
+        <details class="command-card"><summary><span>09</span><div><strong>LACP EtherChannel</strong><small>Layer 2 dan Layer 3 bundle</small></div></summary><div class="command-content"><p class="command-table-title">Opsi A — Layer 2 trunk EtherChannel:</p><pre><code>configure terminal
+interface range &lt;MEMBER_RANGE&gt;
+ switchport mode trunk
+ channel-group &lt;GROUP&gt; mode active
+interface port-channel &lt;GROUP&gt;
+ switchport mode trunk
+ no shutdown
+end
+show etherchannel summary
+show lacp neighbor</code></pre><p class="command-table-title">Opsi B — Layer 3 EtherChannel:</p><pre><code>configure terminal
+ip routing
+interface range &lt;MEMBER_RANGE&gt;
+ no switchport
+ channel-group &lt;GROUP&gt; mode active
+interface port-channel &lt;GROUP&gt;
+ no switchport
+ ip address &lt;IPV4&gt; &lt;MASK&gt;
+ no shutdown
+end
+show etherchannel summary
+show lacp neighbor
+show etherchannel load-balance</code></pre><p>Pilih satu opsi dan terapkan konfigurasi yang kompatibel pada kedua ujung. <code>active + passive</code> atau <code>active + active</code> membentuk LACP; passive + passive tidak. Parameter seluruh member harus konsisten.</p></div></details>
+
+        <details class="command-card"><summary><span>10</span><div><strong>Rapid PVST+ &amp; guards</strong><small>Root · roles · PortFast · protection</small></div></summary><div class="command-content"><p class="command-table-title">SW1 — kandidat root utama:</p><pre><code>configure terminal
+spanning-tree mode rapid-pvst
+spanning-tree vlan &lt;VLAN&gt; root primary
+end
+show spanning-tree root</code></pre><p class="command-table-title">SW2 — kandidat root cadangan:</p><pre><code>configure terminal
+spanning-tree mode rapid-pvst
+spanning-tree vlan &lt;VLAN&gt; root secondary
+end
+show spanning-tree root</code></pre><p class="command-table-title">Proteksi port — pilih sesuai peran port:</p><pre><code>configure terminal
+interface &lt;HOST_PORT&gt;
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+interface &lt;DESIGNATED_PORT&gt;
+ spanning-tree guard root
+interface &lt;NON_DESIGNATED_PORT&gt;
+ spanning-tree guard loop
+end
+show spanning-tree vlan &lt;VLAN&gt;
+show spanning-tree interface &lt;PORT&gt; detail</code></pre><p>BPDU Filter dapat menyembunyikan BPDU dan menimbulkan loop; gunakan hanya bila konsekuensinya dipahami.</p></div></details>
+      </div>
+      <aside class="command-note"><strong>Checklist Wireless GUI:</strong> buat WLAN/SSID → map ke VLAN/interface → pilih WPA2-PSK/AES atau WPA3-SAE sesuai dukungan → atur QoS/profile → enable WLAN → verifikasi association, authentication, DHCP, gateway, DNS, dan roaming. Menu bergantung model WLC; praktikkan pada <a href="labs.html#lab38">Lab 38</a>, <a href="labs.html#lab44">Lab 44</a>, dan <a href="labs.html#lab57">Lab 57</a>.</aside>
+    </div>
+
+    <div class="command-domain" id="cmd-connectivity">
+      <header><span class="domain-number">3.0</span><div><h3>IP Connectivity</h3><p>Routing table, static route IPv4/IPv6, dan single-area OSPFv2.</p></div><b>25%</b></header>
+      <div class="command-grid">
+        <details class="command-card"><summary><span>11</span><div><strong>IPv4 static route</strong><small>Network · default · host · floating</small></div></summary><div class="command-content"><p class="command-table-title">Pilih hanya jenis route yang diperlukan:</p><pre><code>configure terminal
+! Network route
+ip route &lt;NETWORK&gt; &lt;MASK&gt; &lt;NEXT_HOP&gt;
+! Default route
+ip route 0.0.0.0 0.0.0.0 &lt;NEXT_HOP&gt;
+! Host route
+ip route &lt;HOST_IP&gt; 255.255.255.255 &lt;NEXT_HOP&gt;
+! Floating static
+ip route &lt;NETWORK&gt; &lt;MASK&gt; &lt;BACKUP_NEXT_HOP&gt; 200
+end
+show ip route
+show ip route static
+show ip route &lt;DESTINATION&gt;
+show ip cef &lt;DESTINATION&gt;</code></pre></div></details>
+
+        <details class="command-card"><summary><span>12</span><div><strong>IPv6 static route</strong><small>Default · host · link-local next hop</small></div></summary><div class="command-content"><p class="command-table-title">Aktifkan forwarding lalu pilih hanya jenis route yang diperlukan:</p><pre><code>configure terminal
+ipv6 unicast-routing
+ipv6 route &lt;PREFIX&gt;/&lt;LENGTH&gt; &lt;NEXT_HOP&gt;
+ipv6 route ::/0 &lt;NEXT_HOP&gt;
+ipv6 route &lt;HOST&gt;/128 &lt;NEXT_HOP&gt;
+ipv6 route &lt;PREFIX&gt;/&lt;LENGTH&gt; &lt;INTERFACE&gt; &lt;LINK_LOCAL&gt;
+ipv6 route &lt;PREFIX&gt;/&lt;LENGTH&gt; &lt;BACKUP_NEXT_HOP&gt; 200
+end
+show ipv6 route
+show ipv6 route static
+show ipv6 route &lt;DESTINATION&gt;
+show ipv6 cef &lt;DESTINATION&gt;</code></pre><p>Jika next hop adalah link-local, exit interface wajib disebut.</p></div></details>
+
+        <details class="command-card"><summary><span>13</span><div><strong>Single-area OSPFv2</strong><small>RID · passive · point-to-point · DR/BDR</small></div></summary><div class="command-content"><p class="command-table-title">Konfigurasi dasar + interface point-to-point:</p><pre><code>configure terminal
+router ospf &lt;PROCESS_ID&gt;
+ router-id &lt;ROUTER_ID&gt;
+ passive-interface default
+ no passive-interface &lt;TRANSIT_INTERFACE&gt;
+ default-information originate
+
+interface &lt;INTERFACE&gt;
+ ip ospf &lt;PROCESS_ID&gt; area 0
+ ip ospf network point-to-point
+ ip ospf cost &lt;COST&gt;
+end
+show ip ospf neighbor
+show ip ospf interface brief
+show ip route ospf</code></pre><p class="command-table-title">Khusus broadcast multiaccess, atur eligibility DR/BDR bila diperlukan:</p><pre><code>configure terminal
+interface &lt;BROADCAST_INTERFACE&gt;
+ no ip ospf network point-to-point
+ ip ospf priority &lt;0-255&gt;
+end
+show ip ospf interface &lt;BROADCAST_INTERFACE&gt;
+show ip ospf neighbor
+show ip ospf database
+show ip route ospf</code></pre><p><code>ip ospf priority</code> memengaruhi pemilihan DR/BDR pada network type yang melakukan election, bukan point-to-point. <code>default-information originate</code> memerlukan default route di RIB kecuali memakai <code>always</code>. Jika router ID diubah setelah proses aktif, restart proses OSPF pada maintenance window atau reload agar identitas baru digunakan.</p></div></details>
+
+        <details class="command-card"><summary><span>14</span><div><strong>Routing decision</strong><small>RIB selection · LPM · FHRP verify</small></div></summary><div class="command-content"><pre><code>show ip route &lt;DESTINATION&gt;
+show ipv6 route &lt;DESTINATION&gt;
+show ip protocols
+show ip cef &lt;DESTINATION&gt; detail
+traceroute &lt;DESTINATION&gt;
+traceroute ipv6 &lt;DESTINATION&gt;
+show standby brief</code></pre><p><strong>RIB:</strong> untuk prefix identik, administrative distance memilih sumber route dan metric memilih jalur dalam protocol yang sama. <strong>Forwarding:</strong> destination paket dicocokkan ke entry RIB dengan longest prefix match. <code>show standby brief</code> hanya untuk HSRP dan ketersediaannya bergantung platform; blueprint menekankan konsep FHRP.</p></div></details>
+      </div>
+    </div>
+
+    <div class="command-domain" id="cmd-services">
+      <header><span class="domain-number">4.0</span><div><h3>IP Services</h3><p>NAT, NTP, DHCP relay/client, SSH, logging, dan file transfer.</p></div><b>10%</b></header>
+      <div class="command-grid">
+        <details class="command-card"><summary><span>15</span><div><strong>Static NAT, pool &amp; PAT</strong><small>Tiga skenario inside source</small></div></summary><div class="command-content"><p class="command-table-title">Opsi A — static NAT one-to-one:</p><pre><code>configure terminal
+interface &lt;LAN_INTERFACE&gt;
+ ip nat inside
+interface &lt;WAN_INTERFACE&gt;
+ ip nat outside
+ip nat inside source static &lt;INSIDE_LOCAL&gt; &lt;INSIDE_GLOBAL&gt;
+end
+show ip nat translations
+show ip nat statistics</code></pre><p class="command-table-title">Opsi B — dynamic NAT dengan pool:</p><pre><code>configure terminal
+interface &lt;LAN_INTERFACE&gt;
+ ip nat inside
+interface &lt;WAN_INTERFACE&gt;
+ ip nat outside
+access-list 1 permit &lt;INSIDE_NETWORK&gt; &lt;WILDCARD&gt;
+ip nat pool &lt;POOL&gt; &lt;START_GLOBAL&gt; &lt;END_GLOBAL&gt; netmask &lt;MASK&gt;
+ip nat inside source list 1 pool &lt;POOL&gt;
+end
+show ip nat translations
+show ip nat statistics</code></pre><p class="command-table-title">Opsi C — PAT memakai alamat interface WAN:</p><pre><code>configure terminal
+interface &lt;LAN_INTERFACE&gt;
+ ip nat inside
+interface &lt;WAN_INTERFACE&gt;
+ ip nat outside
+access-list 1 permit &lt;INSIDE_NETWORK&gt; &lt;WILDCARD&gt;
+ip nat inside source list 1 interface &lt;WAN_INTERFACE&gt; overload
+end
+show ip nat translations
+show ip nat statistics</code></pre><p>Pilih satu skenario sesuai desain dan pastikan routing dua arah tersedia. <code>clear ip nat translation *</code> tidak disertakan pada blok salin karena memutus translation aktif; gunakan hanya saat troubleshooting terkontrol.</p></div></details>
+
+        <details class="command-card"><summary><span>16</span><div><strong>NTP client &amp; server</strong><small>Time synchronization</small></div></summary><div class="command-content"><p class="command-table-title">Perangkat sebagai NTP client:</p><pre><code>configure terminal
+clock timezone WIB 7 0
+service timestamps log datetime msec
+ntp server &lt;NTP_SERVER&gt; prefer
+ntp server &lt;BACKUP_NTP&gt;
+end
+show clock detail
+show ntp associations
+show ntp status</code></pre><p class="command-table-title">Hanya untuk lab terisolasi sebagai authoritative source:</p><pre><code>configure terminal
+ntp master &lt;STRATUM&gt;
+end
+show ntp status</code></pre><p><code>ntp master</code> membuat perangkat melayani waktu dari clock lokal; jangan gunakan sebagai pengganti sumber waktu tepercaya pada produksi. Sintaks timezone dan NTP dapat berbeda menurut platform.</p></div></details>
+
+        <details class="command-card"><summary><span>17</span><div><strong>DHCP client &amp; relay</strong><small>Dynamic address · helper</small></div></summary><div class="command-content"><p class="command-table-title">Opsi A — interface IOS sebagai DHCP client:</p><pre><code>configure terminal
+interface &lt;WAN_INTERFACE&gt;
+ ip address dhcp
+ no shutdown
+end
+show dhcp lease
+show ip interface brief</code></pre><p class="command-table-title">Opsi B — relay pada interface gateway client:</p><pre><code>configure terminal
+interface &lt;CLIENT_GATEWAY_INTERFACE&gt;
+ ip helper-address &lt;DHCP_SERVER&gt;
+end
+show ip interface brief
+show running-config interface &lt;INTERFACE&gt;</code></pre><p><code>ip helper-address</code> diletakkan pada interface yang menerima broadcast client; server harus memiliki pool dan return route untuk subnet giaddr.</p></div></details>
+
+        <details class="command-card"><summary><span>18</span><div><strong>SSH remote access</strong><small>Local user · RSA · VTY</small></div></summary><div class="command-content"><pre><code>configure terminal
+hostname &lt;HOSTNAME&gt;
+ip domain-name &lt;DOMAIN&gt;
+username &lt;USER&gt; privilege 15 secret &lt;SECRET&gt;
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 15
+ login local
+ transport input ssh
+ exec-timeout 10 0
+end
+show ip ssh
+show ssh</code></pre><p>Jumlah line VTY dan dukungan modulus RSA dapat berbeda menurut image/platform. Gunakan secret unik dan jangan menempel credential produksi dari halaman web.</p></div></details>
+
+        <details class="command-card"><summary><span>19</span><div><strong>Syslog &amp; SNMP</strong><small>Polling · traps · event logging</small></div></summary><div class="command-content"><pre><code>configure terminal
+service timestamps log datetime msec localtime
+logging host &lt;SYSLOG_SERVER&gt;
+logging trap warnings
+logging buffered 16384 notifications
+
+ip access-list standard NMS-ONLY
+ permit host &lt;NMS_IP&gt;
+snmp-server community &lt;COMMUNITY&gt; ro NMS-ONLY
+snmp-server host &lt;NMS_IP&gt; version 2c &lt;COMMUNITY&gt;
+snmp-server enable traps
+end
+show logging
+show snmp community
+show snmp host</code></pre><p>NMS melakukan polling terhadap agent; <code>snmp-server host</code> menetapkan penerima notification, sedangkan <code>snmp-server enable traps</code> mengaktifkan kategori trap yang didukung. Sintaks trap bervariasi menurut image. SNMPv2c community adalah plaintext; prioritaskan SNMPv3 pada lingkungan nyata.</p></div></details>
+
+        <details class="command-card"><summary><span>20</span><div><strong>TFTP/FTP backup</strong><small>Save · export · restore</small></div></summary><div class="command-content"><p class="command-table-title">Simpan lokal dan ekspor backup:</p><pre><code>copy running-config startup-config
+copy running-config tftp:
+copy startup-config tftp:
+copy flash: ftp:
+dir flash:
+show file systems</code></pre><p class="command-table-title">Restore — jalankan satu arah copy setelah backup dan verifikasi file:</p><pre><code>copy tftp: running-config
+copy tftp: startup-config</code></pre><p><strong>Perhatian:</strong> copy ke <code>running-config</code> melakukan merge langsung dan dapat mengubah akses/routing saat itu juga; copy ke <code>startup-config</code> memengaruhi boot berikutnya. Verifikasi source, destination, checksum/isi, dan siapkan rollback. TFTP tidak memiliki authentication/encryption; FTP memakai authentication tetapi credential/data tidak terenkripsi secara default.</p></div></details>
+      </div>
+      <aside class="command-note"><strong>QoS PHB:</strong> gunakan <code>show policy-map interface</code> untuk verifikasi. Konfigurasi class-map/policy-map bersifat pengayaan; scope ujian menekankan classification, marking, queuing, congestion, policing, dan shaping.</aside>
+    </div>
+
+    <div class="command-domain" id="cmd-security">
+      <header><span class="domain-number">5.0</span><div><h3>Security Fundamentals</h3><p>Device access, ACL, port security, DHCP snooping, dan DAI.</p></div><b>15%</b></header>
+      <div class="command-grid">
+        <details class="command-card"><summary><span>21</span><div><strong>Local access control</strong><small>Secret · console · VTY · ACL</small></div></summary><div class="command-content"><pre><code>configure terminal
+enable secret &lt;ENABLE_SECRET&gt;
+username &lt;ADMIN&gt; privilege 15 secret &lt;ADMIN_SECRET&gt;
+line console 0
+ login local
+ exec-timeout 5 0
+line vty 0 15
+ login local
+ transport input ssh
+
+ip access-list standard MGMT
+ permit &lt;MGMT_NETWORK&gt; &lt;WILDCARD&gt;
+ deny any log
+line vty 0 15
+ access-class MGMT in
+end
+show access-lists MGMT
+show running-config | section line vty</code></pre><p>ACL management harus mengizinkan alamat admin yang benar sebelum diterapkan agar sesi berikutnya tidak terkunci. SSH juga memerlukan hostname, domain name, dan RSA key seperti pada kartu 18.</p></div></details>
+
+        <details class="command-card"><summary><span>22</span><div><strong>IPv4 &amp; IPv6 ACL</strong><small>Standard · extended · traffic-filter</small></div></summary><div class="command-content"><p class="command-table-title">Opsi A — standard IPv4 ACL:</p><pre><code>configure terminal
+ip access-list standard &lt;STD_ACL&gt;
+ permit &lt;SOURCE&gt; &lt;WILDCARD&gt;
+ deny any log
+interface &lt;INTERFACE&gt;
+ ip access-group &lt;STD_ACL&gt; in
+end
+show access-lists &lt;STD_ACL&gt;</code></pre><p class="command-table-title">Opsi B — extended IPv4 ACL untuk policy HTTPS tertentu:</p><pre><code>configure terminal
+ip access-list extended &lt;EXT_ACL&gt;
+ permit tcp &lt;SOURCE&gt; &lt;WC&gt; host &lt;SERVER&gt; eq 443
+ deny ip &lt;SOURCE&gt; &lt;WC&gt; any log
+ permit ip any any
+interface &lt;INTERFACE&gt;
+ ip access-group &lt;EXT_ACL&gt; in
+end
+show access-lists &lt;EXT_ACL&gt;</code></pre><p class="command-table-title">Opsi C — contoh IPv6 ACL inbound pada VLAN client:</p><pre><code>configure terminal
+ipv6 access-list &lt;IPV6_ACL&gt;
+ permit icmp any any router-solicitation
+ permit icmp any any nd-ns
+ permit icmp any any nd-na
+ permit icmp any any packet-too-big
+ permit icmp any any time-exceeded
+ permit icmp any any parameter-problem
+ permit tcp &lt;SOURCE_PREFIX&gt;/64 host &lt;SERVER_V6&gt; eq 443
+ deny ipv6 any any log
+interface &lt;INTERFACE&gt;
+ ipv6 traffic-filter &lt;IPV6_ACL&gt; in
+end
+show ipv6 access-list
+show ipv6 interface &lt;INTERFACE&gt;</code></pre><p>Setiap blok adalah contoh policy terpisah; sesuaikan interface, arah, source, destination, dan kebutuhan trafik. Contoh IPv6 mengizinkan Router Solicitation dari client tetapi sengaja tidak mengizinkan Router Advertisement masuk dari client. Jangan memblokir Neighbor Discovery atau ICMPv6 yang diperlukan Path MTU Discovery. Semua ACL memiliki implicit deny di akhir.</p></div></details>
+
+        <details class="command-card"><summary><span>23</span><div><strong>Port security</strong><small>Maximum · sticky · violation</small></div></summary><div class="command-content"><pre><code>configure terminal
+interface &lt;HOST_PORT&gt;
+ switchport mode access
+ switchport access vlan &lt;VLAN&gt;
+ switchport port-security
+ switchport port-security maximum &lt;COUNT&gt;
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+end
+show port-security
+show port-security interface &lt;HOST_PORT&gt;
+show port-security address</code></pre><p>Sticky MAC tidak digunakan untuk latihan dynamic aging. Violation mode: protect, restrict, atau shutdown.</p></div></details>
+
+        <details class="command-card"><summary><span>24</span><div><strong>DHCP snooping &amp; DAI</strong><small>Trusted uplink · rate limiting</small></div></summary><div class="command-content"><pre><code>configure terminal
+ip dhcp snooping
+ip dhcp snooping vlan &lt;VLAN_LIST&gt;
+ip arp inspection vlan &lt;VLAN_LIST&gt;
+
+interface &lt;TRUSTED_UPLINK&gt;
+ ip dhcp snooping trust
+ ip arp inspection trust
+
+interface range &lt;HOST_PORTS&gt;
+ ip dhcp snooping limit rate 15
+end
+show ip dhcp snooping
+show ip dhcp snooping binding
+show ip arp inspection
+show ip arp inspection statistics</code></pre><p>DAI menggunakan DHCP snooping binding. Host statis memerlukan ARP ACL atau mekanisme binding yang sesuai.</p></div></details>
+      </div>
+      <aside class="command-note"><strong>Security tanpa satu IOS template:</strong> threat/vulnerability/exploit/mitigation, awareness, physical access, MFA/certificate/biometric, IPsec remote/site-to-site, dan WPA2/WPA3 dinilai sebagai konsep/desain atau melalui GUI. Lihat <a href="labs.html#lab18">Lab 18</a>, <a href="labs.html#lab37">Lab 37</a>, <a href="labs.html#lab44">Lab 44</a>, <a href="labs.html#lab53">Lab 53</a>, dan <a href="labs.html#lab55">Lab 55</a>.</aside>
+    </div>
+
+    <div class="command-domain" id="cmd-automation">
+      <header><span class="domain-number">6.0</span><div><h3>Automation &amp; Programmability</h3><p>Command verifikasi IOS dan batas antara device CLI, API, serta automation tool.</p></div><b>10%</b></header>
+      <div class="command-grid">
+        <details class="command-card"><summary><span>25</span><div><strong>IOS state collection</strong><small>Running state · inventory · structured sections</small></div></summary><div class="command-content"><pre><code>terminal length 0
+show running-config
+show startup-config
+show running-config | section router ospf
+show running-config | section interface
+show running-config | include ip route|ipv6 route
+show version
+show inventory
+show ip interface brief
+show ipv6 interface brief</code></pre><p>Command ini mengumpulkan state yang dapat dibandingkan oleh automation. Filter pipe, <code>show inventory</code>, dan <code>terminal length</code> dapat berbeda menurut platform. Jangan menganggap output CLI sebagai JSON tanpa parser atau API yang mendukung structured data.</p></div></details>
+
+        <details class="command-card"><summary><span>26</span><div><strong>API &amp; automation boundary</strong><small>REST · JSON/XML · Ansible · Terraform</small></div></summary><div class="command-content"><p class="command-table-title">Bukan Cisco IOS CLI langsung:</p><table class="command-table"><thead><tr><th>Tujuan</th><th>Mekanisme</th></tr></thead><tbody><tr><td>Create / Read / Update / Delete</td><td>POST / GET / PUT atau PATCH / DELETE</td></tr><tr><td>Data encoding</td><td>JSON atau XML sesuai API</td></tr><tr><td>Configuration management</td><td>Ansible collection <code>cisco.ios</code></td></tr><tr><td>Infrastructure lifecycle</td><td>Terraform provider</td></tr><tr><td>Controller integration</td><td>Northbound API; southbound ke perangkat</td></tr></tbody></table><p class="command-table-title">Read-only/pre-check pada control node:</p><pre><code>curl --cacert lab-ca.pem -H "Authorization: Bearer $TOKEN" &lt;API_URL&gt;
+ansible-playbook -i inventory.yml baseline.yml --check --diff</code></pre><p class="command-table-title">Apply setelah diff direview dan perubahan disetujui:</p><pre><code>ansible-playbook -i inventory.yml baseline.yml --diff</code></pre><p><strong>Perhatian:</strong> blok kedua benar-benar menerapkan perubahan. Token/password harus berada di environment atau vault, bukan source. Diff dapat mengandung data sensitif; lindungi output log. Gunakan pre-check, validation, approval, canary, post-check, dan rollback.</p></div></details>
+      </div>
+    </div>
+
+    <div class="command-legend">
+      <strong>Cara memakai rangkuman</strong>
+      <ol><li>Gunakan sebagai template, bukan konfigurasi universal.</li><li>Ganti placeholder dan pisahkan blok multi-perangkat sebelum menempel.</li><li>Verifikasi state dengan command <code>show</code> yang tersedia.</li><li>Command pengayaan/platform-dependent harus diuji pada CML/GNS3/IOS yang sesuai.</li></ol>
+    </div>
+  </section>
+</main>
+
+<footer><div class="footer-inner"><span>CCNA Lab Atlas · Rangkuman Cisco IOS untuk CCNA 200-301 v1.1.</span><a class="back-top" href="#top">Kembali ke atas ↑</a></div></footer>
+
+<script src="app.js" defer></script>
+</body></html>
