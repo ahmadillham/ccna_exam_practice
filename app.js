@@ -51,7 +51,42 @@ const getLevel = (number) => {
   return "lanjut";
 };
 
-const getDevices = (title) => {
+const getDevices = (title, body) => {
+  if (body) {
+    const topoCode = body.querySelector("pre code");
+    if (topoCode) {
+      const routers = new Set();
+      const switches = new Set();
+      const endpoints = new Set();
+      const servers = new Set();
+      const wireless = new Set();
+
+      const words = topoCode.textContent.split(/[\s─┌┼┘┐│═]+/);
+      words.forEach((word) => {
+        const clean = word.trim().replace(/^\[|\]$/g, "").toUpperCase();
+        if (!clean) return;
+        if (/^R[1-9]$/.test(clean) || /^ROUTER$/.test(clean)) routers.add(clean);
+        else if (/^(SW|DSW|ASW)[1-9]?$/.test(clean)) switches.add(clean);
+        else if (/^PC(-[A-Z0-9]+)?$/.test(clean) || /^ADMIN-PC$/.test(clean) || /^HOST$/.test(clean)) endpoints.add(clean);
+        else if (/SERVER/.test(clean) || /TFTP/.test(clean)) servers.add(clean);
+        else if (/WLC/.test(clean) || /^AP[1-9]?$/.test(clean) || /^LAP[1-9]?$/.test(clean)) wireless.add(clean);
+      });
+
+      const parts = [];
+      if (routers.size > 0) parts.push(`${routers.size} router`);
+      if (switches.size > 0) parts.push(`${switches.size} switch`);
+      if (wireless.size > 0) parts.push(`${wireless.size} perangkat wireless`);
+      if (servers.size > 0) parts.push(`${servers.size} server`);
+      if (endpoints.size > 0) parts.push(`${endpoints.size} PC`);
+
+      if (parts.length > 0) {
+        if (parts.length === 1) return parts[0] + " sesuai topologi.";
+        const last = parts.pop();
+        return parts.join(", ") + " dan " + last + " sesuai topologi.";
+      }
+    }
+  }
+
   const value = title.toLowerCase();
 
   if (/wlan|wireless|wlc|\brf\b/.test(value)) {
@@ -211,7 +246,7 @@ const addStandardPanels = () => {
     grid.append(
       createStandardItem("Prasyarat", getPrerequisite(number, title)),
       createStandardItem("Estimasi", duration),
-      createStandardItem("Perangkat", LAB_METADATA[number]?.devices || getDevices(title)),
+      createStandardItem("Perangkat", LAB_METADATA[number]?.devices || getDevices(title, body)),
       createStandardItem("Platform / scope", getPlatform(number)),
       createStandardItem("Addressing", LAB_METADATA[number]?.addressing || getAddressing(body), "standard-wide"),
       createStandardItem("Target lulus", acceptance, "standard-wide"),
