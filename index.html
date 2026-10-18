@@ -1,28 +1,194 @@
 <!DOCTYPE html>
-<html lang="id"><head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Portal belajar CCNA 200-301 v1.1 dengan 200 latihan soal, 60 latihan lab, rangkuman materi, dan Cisco IOS Command.">
-  <title>CCNA Lab Atlas — Soal, Lab, Teori &amp; IOS Command</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCNA 200-301 v1.1 — Command &amp; Rangkuman Materi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body id="top">
-<main>
-<header class="hero landing-hero">
-  <div class="hero-grid">
-    <div class="landing-copy">
-      <p class="eyebrow">200-301 · Exam v1.1 · Learning portal</p>
-      <h1>Rangkuman dan latihan lab untuk CCNA Exam v1.1</h1>
-      <div class="cta-row landing-actions">
-        <a class="button primary" href="labs.html">Latihan lab</a>
-        <a class="button" href="questions.html">Latihan soal</a>
-        <a class="button" href="theory.html">Rangkuman materi</a>
-        <a class="button" href="commands.html">Rangkuman IOS</a>
-      </div>
-    </div>
+<body>
+  <div class="app-shell">
+    <!-- Left Sidebar -->
+    <aside class="sidebar" id="sidebar" aria-label="Navigasi Topik CCNA">
+      <div class="sidebar-top">
+        <div class="brand-row">
+          <div class="brand-left">
+            <button type="button" class="brand-title" id="brandHomeBtn">CCNA 200-301</button>
+            <span class="version-badge">v1.1</span>
+          </div>
+        </div>
 
+        <div class="filter-box">
+          <input
+            type="text"
+            id="filterInput"
+            class="filter-input"
+            placeholder="Filter topik (mis. OSPF, VLAN)..."
+            autocomplete="off"
+          />
+          <button type="button" id="filterClearBtn" class="filter-clear-btn" title="Bersihkan filter">✕</button>
+        </div>
+
+        <div class="doc-mode-switch" role="tablist" aria-label="Pilih Dokumen">
+          <button type="button" class="doc-mode-btn active" data-doc-mode="command">Command</button>
+          <button type="button" class="doc-mode-btn" data-doc-mode="rangkuman">Rangkuman</button>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" id="sidebarNav" aria-label="Daftar Isi CCNA">
+        <div class="nav-section">
+          <div class="nav-group-header">
+            <span class="nav-group-title">RINGKASAN</span>
+          </div>
+          <button type="button" class="nav-item-btn" data-select-id="daftar-isi">
+            Daftar Isi
+          </button>
+        </div>
+        <div class="nav-section">
+          <div class="nav-group-header">
+            <span class="nav-group-title">1.0 NETWORK FUNDAMENTALS</span>
+            <span class="nav-group-counter">0/2</span>
+          </div>
+          <button type="button" class="nav-item-btn active" data-select-id="cs-1-6-ipv4-addressing-subnetting" title="1.6 IPv4 Addressing & Subnetting">
+            1.6 IPv4 Addressing & Subnetting
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-1-8-ipv6-addressing-prefix" title="1.8 IPv6 Addressing & Prefix">
+            1.8 IPv6 Addressing & Prefix
+          </button>
+        </div>
+        <div class="nav-section">
+          <div class="nav-group-header">
+            <span class="nav-group-title">2.0 NETWORK ACCESS</span>
+            <span class="nav-group-counter">0/6</span>
+          </div>
+          <button type="button" class="nav-item-btn" data-select-id="cs-2-1-vlan-normal-range" title="2.1 VLAN (Normal Range)">
+            2.1 VLAN (Normal Range)
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-2-2-konektivitas-interswitch-trunk" title="2.2 Konektivitas Interswitch (Trunk)">
+            2.2 Konektivitas Interswitch (Trunk)
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-2-3-cdp-lldp" title="2.3 CDP & LLDP">
+            2.3 CDP & LLDP
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-2-4-etherchannel" title="2.4 EtherChannel">
+            2.4 EtherChannel
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-2-5-spanning-tree-rapid-pvst" title="2.5 Spanning Tree – Rapid PVST+">
+            2.5 Spanning Tree – Rapid PVST+
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-2-8-akses-manajemen-tacacs-radius" title="2.8 Akses Manajemen (TACACS+/RADIUS)">
+            2.8 Akses Manajemen (TACACS+/RADIUS)
+          </button>
+        </div>
+        <div class="nav-section">
+          <div class="nav-group-header">
+            <span class="nav-group-title">3.0 IP CONNECTIVITY</span>
+            <span class="nav-group-counter">0/3</span>
+          </div>
+          <button type="button" class="nav-item-btn" data-select-id="cs-3-3-static-routing" title="3.3 Static Routing">
+            3.3 Static Routing
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-3-4-ospfv2-single-area" title="3.4 OSPFv2 – Single Area">
+            3.4 OSPFv2 – Single Area
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-3-5-first-hop-redundancy-protocol" title="3.5 First Hop Redundancy Protocol">
+            3.5 First Hop Redundancy Protocol
+          </button>
+        </div>
+        <div class="nav-section">
+          <div class="nav-group-header">
+            <span class="nav-group-title">4.0 IP SERVICES</span>
+            <span class="nav-group-counter">0/5</span>
+          </div>
+          <button type="button" class="nav-item-btn" data-select-id="cs-4-1-nat" title="4.1 NAT">
+            4.1 NAT
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-4-2-ntp" title="4.2 NTP">
+            4.2 NTP
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-4-3-dhcp-server" title="4.3 DHCP Server">
+            4.3 DHCP Server
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-4-6-dhcp-client-relay" title="4.6 DHCP Client & Relay">
+            4.6 DHCP Client & Relay
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-4-8-ssh" title="4.8 SSH">
+            4.8 SSH
+          </button>
+        </div>
+        <div class="nav-section">
+          <div class="nav-group-header">
+            <span class="nav-group-title">5.0 SECURITY FUNDAMENTALS</span>
+            <span class="nav-group-counter">0/4</span>
+          </div>
+          <button type="button" class="nav-item-btn" data-select-id="cs-5-3-device-access-control" title="5.3 Device Access Control">
+            5.3 Device Access Control
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-5-6-access-control-list" title="5.6 Access Control List">
+            5.6 Access Control List
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-5-7-layer-2-security" title="5.7 Layer 2 Security">
+            5.7 Layer 2 Security
+          </button>
+          <button type="button" class="nav-item-btn" data-select-id="cs-5-8-aaa-tacacs-radius" title="5.8 AAA (TACACS+ & RADIUS)">
+            5.8 AAA (TACACS+ & RADIUS)
+          </button>
+        </div>
+      </nav>
+    </aside>
+
+    <div class="mobile-backdrop" id="mobileBackdrop"></div>
+
+    <!-- Right Main Content Area -->
+    <main class="main-area" id="mainScrollArea">
+      <div class="mobile-bar">
+        <button type="button" class="mobile-menu-btn" id="mobileMenuBtn">☰ Daftar Topik</button>
+        <span style="font-weight:700;font-size:13.5px;">CCNA 200-301 v1.1</span>
+      </div>
+
+      <div class="content-container" id="contentContainer">
+        <article class="section-block" id="cs-1-6-ipv4-addressing-subnetting">
+          <div class="section-heading-row">
+            <h1 class="section-title">1.6 IPv4 Addressing & Subnetting</h1>
+            <button type="button" class="read-toggle-btn" data-toggle-done="cs-1-6-ipv4-addressing-subnetting">
+              Tandai Selesai
+            </button>
+          </div>
+          <h4 class="sub-label">Konfigurasi IPv4 Address</h4>
+<div class="code-box" id="cs-1-6-ipv4-addressing-subnetting-code-1"><button type="button" class="copy-code-btn" data-code="Router(config)# interface &lt;interface&gt;
+Router(config-if)# ip address &lt;ip-address&gt; &lt;subnet-mask&gt;
+Router(config-if)# ip address &lt;ip-address&gt; &lt;subnet-mask&gt; secondary
+Router(config-if)# no ip address
+Router(config-if)# no shutdown" title="Salin perintah">Salin</button><pre><code>Router(config)# interface &lt;interface&gt;
+Router(config-if)# ip address &lt;ip-address&gt; &lt;subnet-mask&gt;
+Router(config-if)# ip address &lt;ip-address&gt; &lt;subnet-mask&gt; secondary
+Router(config-if)# no ip address
+Router(config-if)# no shutdown</code></pre></div>
+<h4 class="sub-label">Verifikasi Umum</h4>
+<div class="code-box" id="cs-1-6-ipv4-addressing-subnetting-code-2"><button type="button" class="copy-code-btn" data-code="Router# show ip interface brief
+Router# show ip interface &lt;interface&gt;
+Router# show interfaces &lt;interface&gt;
+Router# show running-config interface &lt;interface&gt;
+Router# show ip route connected" title="Salin perintah">Salin</button><pre><code>Router# show ip interface brief
+Router# show ip interface &lt;interface&gt;
+Router# show interfaces &lt;interface&gt;
+Router# show running-config interface &lt;interface&gt;
+Router# show ip route connected</code></pre></div>
+          <div class="subbab-pager">
+            <div></div>
+          <button type="button" class="pager-btn next" data-select-id="cs-1-8-ipv6-addressing-prefix">
+            <span class="pager-dir">Sub-bab Berikutnya →</span>
+            <span class="pager-title">1.8 IPv6 Addressing & Prefix</span>
+          </button>
+          </div>
+        </article>
+      </div>
+    </main>
   </div>
-</header>
-</main>
-</body></html>
+
+  <script src="script.js"></script>
+</body>
+</html>
