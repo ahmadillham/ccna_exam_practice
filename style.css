@@ -1,0 +1,576 @@
+/* CCNA 200-301 v1.1 — dokumentasi (tema gelap) */
+
+/* ------------------------------------------------------------ token */
+:root {
+  /* permukaan */
+  --bg: #1c1c1c;
+  --side-bg: #1f1f1f;
+  --surface: #212121;
+  --panel: #262626;
+  --panel-2: #2b2b2b;
+  --panel-3: #343434;
+  --code-bg: #2a2a2a;
+
+  /* garis */
+  --border: #303030;
+  --border-strong: #3a3a3a;
+  --border-soft: #2a2a2a;
+  --stroke: #4a4a4a;
+
+  /* teks (semua ≥ 4.5:1 terhadap permukaan di atas) */
+  --text: #d9d9d9;
+  --text-strong: #f5f5f5;
+  --text-2: #d0d0d0;
+  --text-soft: #c4c4c4;
+  --code-text: #f0f0f0;
+  --muted: #a3a3a3;
+  --faint: #9a9a9a;
+
+  --accent: #8ab4f8;
+  --accent-ring: rgba(138, 180, 248, 0.28);
+  --selection: rgba(138, 180, 248, 0.35);
+  --scrim: rgba(0, 0, 0, 0.55);
+
+  /* tata letak */
+  --sidebar-w: 334px;
+  --page-offset: 34px;     /* jarak h1 dari atas viewport saat scrollY = 0 */
+  --heading-offset: 24px;  /* scroll-margin untuk deep link ke sub-judul */
+
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+/* ------------------------------------------------------------ dasar */
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html {
+  color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: var(--stroke) var(--bg);
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 0.97rem;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* fokus keyboard yang konsisten (spesifisitas 0 agar mudah di-override) */
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+[tabindex="-1"]:focus { outline: none; }   /* target fokus programatik (h1, h2, h3) */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 10px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--panel-2);
+  color: var(--text-strong);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+
+/* ------------------------------------------------------------ sidebar */
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--sidebar-w);
+  background: var(--side-bg);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+}
+.side-head {
+  padding: 18px 17px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.brand-name {
+  font-size: 1.1875rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--text-strong);
+}
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--panel-2);
+  border: 1px solid var(--border-strong);
+  color: var(--text-2);
+}
+.filter {
+  width: 100%;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 9px;
+  border: 1px solid var(--border-strong);
+  background: var(--panel);
+  color: var(--text-strong);
+  font: 400 0.875rem var(--font);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.filter::placeholder { color: var(--muted); }
+.filter:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+  outline: 2px solid transparent;   /* tetap terlihat pada mode kontras tinggi */
+}
+.filter::-webkit-search-cancel-button { filter: invert(0.7); }
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 4px;
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  background: var(--side-bg);
+}
+.tab {
+  height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font: 500 0.844rem var(--font);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.tab:hover { color: var(--text-strong); }
+.tab[aria-pressed="true"] {
+  background: var(--panel-3);
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.side-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px 40px 13px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--stroke) transparent;
+}
+
+.nav-group { margin-bottom: 18px; }
+.nav-title {
+  padding: 10px 10px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-strong);
+}
+.nav-link {
+  display: block;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--text-soft);
+  font-size: 0.906rem;
+  line-height: 1.52;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-link:hover { background: var(--panel); color: var(--text-strong); }
+.nav-link[aria-current="page"] {
+  background: var(--panel-2);
+  border-color: var(--border-strong);
+  color: var(--text-strong);
+  font-weight: 600;
+}
+.nav-link:focus-visible { outline-offset: -2px; }
+.no-results { padding: 12px; color: var(--muted); font-size: 0.875rem; }
+.no-results:empty { padding: 0; }
+
+/* ------------------------------------------------------------ konten */
+.main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+}
+.content {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 34px 32px 90px;
+}
+.page { scroll-margin-top: var(--page-offset); }
+h2[id], h3[id] { scroll-margin-top: var(--heading-offset); }
+
+/* selector dibuat berspesifisitas rendah (:where) agar komponen di bawah mudah menimpa */
+:where(.content) h1 {
+  margin: 0 0 22px;
+  font-size: 1.75rem;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text-strong);
+}
+:where(.content) h2 {
+  margin: 44px 0 14px;
+  font-size: 1.3125rem;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-strong);
+}
+/* sub-judul: h2.sub (halaman command) dan h3 tampil dengan gaya yang sama */
+:where(.content) :is(h3, h2.sub) {
+  margin: 34px 0 14px;
+  font-size: 1.094rem;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--text-strong);
+}
+:where(.content) h1 + h2.sub { margin-top: 26px; }
+:where(.content) p { margin: 0 0 14px; }
+:where(.content) p > em:only-child { color: var(--text-soft); }
+:where(.content) strong { color: var(--text-strong); font-weight: 600; }
+:where(.content) a { color: var(--accent); text-underline-offset: 3px; }
+
+:where(.content) :is(ul, ol) { margin: 0 0 16px; padding-left: 24px; }
+:where(.content) li { margin: 4px 0; }
+:where(.content) li > :is(ul, ol) { margin: 4px 0 6px; }
+:where(.content) li::marker { color: var(--faint); }
+:where(.content) hr { border: 0; border-top: 1px solid var(--border); margin: 32px 0; }
+
+:where(.content) blockquote {
+  margin: 0 0 18px;
+  padding: 10px 18px;
+  border-left: 3px solid var(--stroke);
+  background: var(--surface);
+  border-radius: 0 8px 8px 0;
+  color: var(--text-soft);
+}
+:where(.content) blockquote p { margin: 0; }
+
+/* tautan ke sub-judul (ditambahkan oleh script.js) */
+.anchor {
+  margin-left: 0.45em;
+  color: var(--faint);
+  font-weight: 400;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.anchor:hover { color: var(--accent); }
+:is(h2, h3):hover > .anchor,
+.anchor:focus-visible { opacity: 1; }
+
+/* ------------------------------------------------------------ kode */
+:where(.content) code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  color: var(--code-text);
+}
+.code-block { position: relative; margin: 0 0 18px; }
+:where(.content) pre {
+  margin: 0;
+  padding: 18px 26px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--stroke) transparent;
+}
+:where(.content) pre code {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.9375rem;
+  line-height: 1.87;
+  color: var(--code-text);
+  white-space: pre;
+  tab-size: 4;
+}
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--border);
+  color: var(--text-2);
+  font: 500 0.75rem var(--font);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.code-block:hover .copy-btn,
+.code-block:focus-within .copy-btn { opacity: 1; }
+.copy-btn:hover { color: var(--text-strong); background: var(--border-strong); }
+
+/* layar sentuh tidak punya hover: tombol salin tampil permanen di atas blok kode */
+@media (hover: none) {
+  .code-block { display: flex; flex-direction: column; }
+  .copy-btn {
+    position: static;
+    align-self: flex-end;
+    order: -1;              /* di atas blok kode */
+    margin-bottom: 6px;
+    opacity: 1;
+  }
+  .anchor { display: none; }
+}
+
+/* ------------------------------------------------------------ tabel */
+.table-wrap {
+  margin: 0 0 20px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--stroke) transparent;
+}
+:where(.content) table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.906rem;
+  line-height: 1.55;
+}
+:where(.content) :is(th, td) {
+  padding: 10px 16px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+:where(.content) th {
+  background: var(--panel);
+  color: var(--text-strong);
+  font-weight: 600;
+  white-space: nowrap;
+}
+:where(.content) tr:last-child td { border-bottom: 0; }
+:where(.content) :is(td + td, th + th) { border-left: 1px solid var(--border-soft); }
+:where(.content) tbody tr:hover td { background: var(--surface); }
+:where(.content) td code { white-space: nowrap; }
+
+/* ------------------------------------------------------------ keterangan materi ujian */
+.exam-note {
+  margin: 0 0 30px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.exam-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+.exam-label {
+  margin-right: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.exam-chip {
+  padding: 3px 9px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+.exam-chip.exam-verb { color: var(--text-strong); font-weight: 600; }
+.exam-obj { margin: 0; font-size: 0.969rem; color: var(--text-strong); }
+.exam-obj strong { color: var(--accent); margin-right: 4px; }
+.exam-subs {
+  margin: 10px 0 0;
+  padding: 10px 0 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2px 24px;
+}
+.exam-subs li { margin: 2px 0; font-size: 0.906rem; color: var(--text-2); }
+.exam-subs strong { color: var(--muted); font-weight: 600; margin-right: 4px; }
+
+/* ------------------------------------------------------------ daftar isi */
+.toc-group { margin: 0 0 8px; }
+h3.toc-title { margin: 28px 0 8px; font-size: 1rem; }
+.toc-weight { margin-left: 8px; font-size: 0.781rem; font-weight: 500; color: var(--faint); letter-spacing: 0; }
+.toc {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 8px;
+}
+.toc li { margin: 0; }
+.toc a {
+  display: block;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 0.906rem;
+  line-height: 1.45;
+  text-decoration: none;
+}
+.toc a:hover { background: var(--panel-2); border-color: var(--border-strong); color: var(--text-strong); }
+.note { margin-top: 36px; color: var(--faint); font-size: 0.875rem; font-style: italic; }
+
+/* ------------------------------------------------------------ prev / next */
+.pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 56px;
+  padding-top: 26px;
+  border-top: 1px solid var(--border);
+}
+.pager a {
+  display: block;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-strong);
+  text-decoration: none;
+  line-height: 1.4;
+  overflow: hidden;
+}
+.pager a:hover { background: var(--panel-2); border-color: var(--border-strong); }
+.pager a small { display: block; margin-bottom: 2px; color: var(--faint); font-size: 0.75rem; }
+.pager a span { display: block; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pager .next { text-align: right; grid-column: 2; }
+.pager .prev { grid-column: 1; }
+
+/* scrollbar halaman */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--stroke); border-radius: 8px; }
+.side-scroll::-webkit-scrollbar { width: 8px; }
+::selection { background: var(--selection); }
+
+/* ------------------------------------------------------------ mobile */
+.topbar, .scrim { display: none; }
+
+@media (max-width: 900px) {
+  :root {
+    --page-offset: 78px;      /* topbar 54px + padding konten 24px */
+    --heading-offset: 70px;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 54px;
+    padding: 0 16px;
+    background: var(--side-bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .menu-btn {
+    display: grid;
+    gap: 4px;
+    width: 38px;
+    height: 38px;
+    padding: 10px 9px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--panel);
+    cursor: pointer;
+  }
+  .menu-btn span { display: block; height: 2px; border-radius: 2px; background: var(--text-2); }
+
+  /* sidebar tertutup: visibility:hidden mengeluarkannya dari urutan Tab & pohon aksesibilitas */
+  .sidebar {
+    width: min(334px, 86vw);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.2s ease, visibility 0s linear 0.2s;
+  }
+  body.menu-open { overflow: hidden; }
+  body.menu-open .sidebar {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.2s ease, visibility 0s;
+  }
+  body.menu-open .scrim { display: block; position: fixed; inset: 0; z-index: 25; background: var(--scrim); }
+
+  .main { margin-left: 0; }
+  .content { padding: 24px 16px 70px; }
+  :where(.content) h1 { font-size: 1.5rem; }
+  :where(.content) pre { padding: 14px 16px; }
+  :where(.content) pre code { font-size: 0.844rem; line-height: 1.85; }
+  .pager { grid-template-columns: 1fr; }
+  .pager .next, .pager .prev { grid-column: 1; text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------ cetak */
+@media print {
+  /* tema terang lewat token: seluruh komponen otomatis ikut berubah */
+  :root {
+    color-scheme: light;
+    --bg: #fff; --side-bg: #fff; --surface: #f7f7f7; --panel: #f3f3f3; --panel-2: #ececec;
+    --panel-3: #e4e4e4; --code-bg: #f0f0f0;
+    --border: #cfcfcf; --border-strong: #b5b5b5; --border-soft: #dcdcdc; --stroke: #999;
+    --text: #111; --text-strong: #000; --text-2: #1a1a1a; --text-soft: #222; --code-text: #000;
+    --muted: #444; --faint: #555; --accent: #0b57d0;
+  }
+  @page { margin: 15mm; }
+  body { font-size: 11pt; line-height: 1.55; }
+  .sidebar, .topbar, .scrim, .pager, .copy-btn, .anchor, .skip-link { display: none !important; }
+  .main { margin: 0; }
+  .content { max-width: none; padding: 0; }
+  .page { scroll-margin-top: 0; }
+  :where(.content) :is(h1, h2, h3) { break-after: avoid; }
+  :where(.content) pre { overflow: visible; }
+  :where(.content) pre code { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 9.5pt; line-height: 1.5; }
+  .code-block, .exam-note, .table-wrap tr { break-inside: avoid; }
+  .table-wrap { overflow: visible; }
+  :where(.content) a { color: inherit; text-decoration: underline; }
+}
